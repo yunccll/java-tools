@@ -1,0 +1,33 @@
+#!/bin/bash
+
+MK_PATH=Makefile
+MK_HEADER_PATH=Makefile.header
+DIR_NAME=$(dirname $0)
+echo $DIR_NAME
+
+if [ -z "$1" ] ; then 
+    echo "need 1st 2nd arg [namespace app], cmd: $0 namespace app"
+    exit 1
+fi
+if [ -z "$2" ] ; then 
+    echo "need 2nd arg [app], cmd: $0 $1 app"
+    exit 1
+fi
+
+if [ ! -f "$DIR_NAME/$MK_PATH" ] ; then 
+    echo  "need the $DIR_NAME/$MK_PATH for the java-tools"
+    exit 2
+fi
+
+mvn -B archetype:generate -DgroupId=$1 -DartifactId=$2 -DarchetypeArtifactId=maven-archetype-quickstart
+
+if [ ! -d "$2" ] ; then 
+    echo "create project [$2] failed!"
+    exit 3
+fi
+
+echo "NAMESPACE   := $1" >> $MK_HEADER_PATH
+echo "ARTIFACT_ID := $2" >> $MK_HEADER_PATH
+
+cat $MK_HEADER_PATH $DIR_NAME/$MK_PATH > $2/$MK_PATH
+rm -frv $MK_HEADER_PATH
