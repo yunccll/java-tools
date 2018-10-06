@@ -37,5 +37,8 @@ clean:
 compile:
 	$(HIDE)mvn compile 
 
+depend:
+	$(HIDE)mvn clean install -e -U
+
 create:
 	$(HIDE)mvn -B archetype:generate -DgroupId=$(NAMESPACE) -DartifactId=$(ARTIFACT_ID) -DarchetypeArtifactId=maven-archetype-quickstart
