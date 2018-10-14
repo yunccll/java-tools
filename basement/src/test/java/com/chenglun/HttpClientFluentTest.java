@@ -30,21 +30,48 @@ public class HttpClientFluentTest
 
     //TODO: Future use
     //TODO: see the fluent api source code && rewrite it
-
-    @Test
     public void testHttpJsonRpc() throws Exception
     {
         /*
-        HttpJsonRpcBuilder b = new HttpJsonRpcBuilder();
-        HttpJsonRpc jsonRpc = b.setUrl(url)
-            .setArgs(UrlEncode(kwargs))
-            .setJson(json)
-            .setProcessor(ThreadPool)
-            .make();
-        
-        code, data = jsonRpc.call();*/
-        //data["status"] = ?
-        //data["json"] =  ?
+        {
+            JsonHttpRpc rpc = new JsonHttpRpc.createDefault();
+            rpc.post<Map>(kwargs);
+            rpc.close();
+        }
+
+        {
+            HttpRpc rpc = new JsonHttpRpc(url, HttpConnection.createDefault());
+            for( int i = 0; i < 100; ++i){
+                Result ret = rpc.post<Map>(kwargs);
+                System.out.println(ret.toString());
+            }
+            rpc.close();
+        }
+
+        {
+            HttpConnection hc = new HttpConnection()
+                .setKeepAlive(true)
+                .setConnectTimeout(timeout)
+                .setSocketTimeout(timeout);
+
+            HttpRpc rpc = new JsonHttpRpc(url, hc)
+            for(int i = 0; i < 100; ++i)
+            {
+                Result ret = rpc.post<Map>(kwargs);
+            }
+
+            rpc.close();
+
+            HttpRpc rpc2 = new JsonHttpRpc(url2, hc);
+            rpc2.post<Map>(kwargs);
+            rpc2.close();
+
+            hc.close();
+        }*/
+
+        //result.code = ?
+        //result.data["status"] = ?
+        //result.data["json"] =  ?
 
         //req: 
         //  http://127.0.0.1:8080/call?k1=v1&&k2=v2&&k3=v3
@@ -128,7 +155,6 @@ public class HttpClientFluentTest
             }
         }
     }
-    @Test 
     public void testThreadedHttpClient() throws Exception
     {
         System.out.println(".......................");
@@ -148,8 +174,7 @@ public class HttpClientFluentTest
         }
     }
 
-
-    public void testHttpGet() throws Exception
+    public void testHttpMultiGet() throws Exception
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
@@ -175,6 +200,34 @@ public class HttpClientFluentTest
             }
             long end = System.nanoTime();
             System.out.printf("tps:%f\n", ((double)count)*1000*1000*1000/(end-start));
+        } finally {
+            httpclient.close();
+        }
+    }
+    @Test 
+    public void testHttpGet() throws Exception
+    {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = "http://127.0.0.1";
+            HttpGet httpGet = new HttpGet(url);
+            
+            httpGet.addHeader("Connection", "Keep-Alive");
+            CloseableHttpResponse response1 = httpclient.execute(httpGet);
+
+            try {
+                System.out.println(response1.getStatusLine());
+
+                HttpEntity entity1 = response1.getEntity();
+                EntityUtils.consume(entity1);
+
+                System.out.println("...........................");
+                Thread.currentThread().sleep(10000);
+                System.out.println("...........................end....");
+            } 
+            finally {
+                response1.close();
+            }
         } finally {
             httpclient.close();
         }
