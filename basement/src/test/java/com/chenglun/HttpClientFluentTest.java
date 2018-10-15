@@ -1,6 +1,8 @@
 package com.chenglun;
 
 import static org.junit.Assert.*;
+
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.junit.Test;
 import org.junit.BeforeClass;
 
@@ -204,7 +206,6 @@ public class HttpClientFluentTest
             httpclient.close();
         }
     }
-    @Test 
     public void testHttpGet() throws Exception
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -228,6 +229,45 @@ public class HttpClientFluentTest
             finally {
                 response1.close();
             }
+        } finally {
+            httpclient.close();
+        }
+    }
+    @Test
+    public void testHttpGetWithConnectionPool() throws Exception
+    {
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+            cm.setMaxTotal(100);
+        CloseableHttpClient httpclient = HttpClients.custom()
+                .setConnectionManager(cm)
+                .build();
+        try {
+            String url = "http://www.baidu.com";
+            HttpGet httpGet = new HttpGet(url);
+
+            httpGet.addHeader("Connection", "Keep-Alive");
+
+
+            for( int i = 0 ; i < 100; i++) {
+                CloseableHttpResponse response1 = httpclient.execute(httpGet);
+                try {
+                    System.out.println(response1.getStatusLine());
+
+                    HttpEntity entity1 = response1.getEntity();
+                    EntityUtils.consume(entity1);
+
+                } finally {
+                    response1.close();
+                }
+                System.out.printf("%d...........................\n", i);
+                Thread.currentThread().sleep(1000);
+                System.out.printf("%d...........................end....\n",i);
+            }
+
+            System.out.println("...........................");
+            Thread.currentThread().sleep(1000000);
+            System.out.println("...........................end....");
+
         } finally {
             httpclient.close();
         }
