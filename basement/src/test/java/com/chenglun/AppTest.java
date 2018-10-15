@@ -1,5 +1,6 @@
 package com.chenglun;
 
+<<<<<<< HEAD
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -79,5 +80,16 @@ public class AppTest
     @Test
     public void testLogger() {
         logger.info("hello world");
+=======
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+public class AppTest 
+{
+    @Test
+    public void testApp()
+    {
+        assertTrue( true );
+>>>>>>> ee9287e25963764f99b651ede901b7ba147ba849
     }
 }

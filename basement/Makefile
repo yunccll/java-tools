@@ -6,9 +6,12 @@ ENTRY_CLASS := App
 
 APP_VERSION := 1.0
 
-REF_FULL_JARS := /Users/chenglun/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar \
-	/Users/chenglun/.m2/repository/org/slf4j/slf4j-log4j12/1.7.6/slf4j-log4j12-1.7.6.jar \
-	/Users/chenglun/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar
+MVN_HOME=$(HOME)/.m2/repository
+
+REF_FULL_JARS :=  \
+	$(MVN_HOME)/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar \
+	$(MVN_HOME)/org/slf4j/slf4j-log4j12/1.7.6/slf4j-log4j12-1.7.6.jar \
+	$(MVN_HOME)/log4j/log4j/1.2.17/log4j-1.2.17.jar
 
 REF_JARS 	:= #mybatis-3.4.4.jar mysql-connector-java-6.0.2.jar
 
