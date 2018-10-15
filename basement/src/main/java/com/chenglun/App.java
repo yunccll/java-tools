@@ -1,75 +1,65 @@
 package com.chenglun;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/*
 
-
-/**
- */
-public class App 
-{
+public class QuickStart {
     final static Logger logger = LoggerFactory.getLogger(App.class);
-
-    public void number(){
-        {
-            Integer i = 1245; 
-            Integer j = 1245;
-            System.out.println(i == j); //false
-            System.out.println(i.equals(j)); //true
-        }
-
-        {
-            int i = 1245;
-            int j = 1245;
-            System.out.println(i == j); //true
-        }
-
-        {
-            //String  --> int ==> String ->integer -> int
-            String istr = "12345";
-            int i = Integer.valueOf(istr).intValue();
-            int j = Integer.parseInt(istr); //better
-        }
-    }
-    public void charF(){
-        // char --> int  auto-convert
-        {
-            System.out.println('a' + 0);
-            System.out.println('程' + 0);
-        }
-
-        //int -> char  force-convert
-        {
-            System.out.println((char)97);
-            System.out.println((char)31243);
-        }
-
-        System.out.println(Character.BYTES);
-    }
-
-    public void stringBuilder(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("hello world\n").append("world");
-        System.out.println(sb.toString());
-    }
-    public void date(){
-        java.util.Date dt = new java.util.Date();
-        System.out.printf("date:%1$tF %1$tT, %1$tr\n", dt);
-    }
-    public void logger(){
-        logger.info("hello world");
-    }
-
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
         org.apache.log4j.BasicConfigurator.configure();
-
-        App app = new App();
-        app.number();
-        app.charF();
-        app.stringBuilder();
-        app.date();
-        app.logger();
     }
+}
+*/
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+public class App {
+
+    public static void main(String[] args) throws Exception {
+
+        //org.apache.log4j.BasicConfigurator.configure();
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpGet httpGet = new HttpGet("http://httpbin.org/get");
+            CloseableHttpResponse response1 = httpclient.execute(httpGet);
+            try {
+                System.out.println(response1.getStatusLine());
+                HttpEntity entity1 = response1.getEntity();
+                EntityUtils.consume(entity1);
+            } finally {
+                response1.close();
+            }
+
+            HttpPost httpPost = new HttpPost("http://httpbin.org/post");
+            List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+            nvps.add(new BasicNameValuePair("username", "vip"));
+            nvps.add(new BasicNameValuePair("password", "secret"));
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+            CloseableHttpResponse response2 = httpclient.execute(httpPost);
+
+            try {
+                System.out.println(response2.getStatusLine());
+                HttpEntity entity2 = response2.getEntity();
+                EntityUtils.consume(entity2);
+            } finally {
+                response2.close();
+            }
+        } finally {
+            httpclient.close();
+        }
+    }
+
 }
