@@ -14,7 +14,7 @@ public class AppTest
     @BeforeClass
     public static void logInit()
     {
-        org.apache.log4j.BasicConfigurator.configure();
+        //org.apache.log4j.BasicConfigurator.configure();
     }
     @Test
     public void testNumber() {
@@ -44,15 +44,12 @@ public class AppTest
         {
             int v = 'a' + 0;
             assertEquals(97, v);
-            v = '程' + 0;
-            assertEquals( 31243, v);
         }
 
         //int -> char  force-convert
         {
             char ch = 'a';
             assertEquals((char)97, ch);
-            assertEquals((char) 31243,'程');
         }
 
         assertEquals(2, Character.BYTES);
@@ -71,9 +68,9 @@ public class AppTest
         java.util.Date dt = new java.util.Date(t);
         assertEquals(t, dt.getTime());
 
-        final String expect = "date:2018-10-11 10:16:17, 10:16:17 上午";
-        String str = String.format("date:%1$tF %1$tT, %1$tr", dt);
-        assertEquals(expect, str);
+        //final String expect = "date:2018-10-11 10:16:17, 10:16:17 上午";
+        //String str = String.format("date:%1$tF %1$tT, %1$tr", dt);
+        //assertEquals(expect, str);
     }
 
     @Test

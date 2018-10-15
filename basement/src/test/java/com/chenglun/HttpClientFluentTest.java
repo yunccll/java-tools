@@ -22,6 +22,9 @@ import org.apache.http.util.EntityUtils;
 
 import java.lang.Thread;
 
+import org.apache.http.client.config.RequestConfig;
+
+
 public class HttpClientFluentTest
 {
         
@@ -92,7 +95,6 @@ public class HttpClientFluentTest
 
 
 
-
     public void testHttpPost() throws Exception
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -120,18 +122,28 @@ public class HttpClientFluentTest
 
     static class ThreadedHttpGet extends java.lang.Thread
     {
+        int cnt;
+        public ThreadedHttpGet(int cnt){
+            this.cnt = cnt;
+        }
         @Override
         public void run(){
-            System.out.println("hello world\n");
+            System.out.printf("hello world, http count:%d\n", this.cnt);
             try {
                 CloseableHttpClient httpclient = HttpClients.createDefault();
                 try {
-                    String url = "http://127.0.0.1";
+                    String url = "http://www.baidu.com";
+
                     HttpGet httpGet = new HttpGet(url);
+                    RequestConfig requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
+                        .setSocketTimeout(2000)
+                        .setConnectionRequestTimeout(2000)
+                        .build();
+                    httpGet.setConfig(requestConfig);
                     
-                    httpGet.addHeader("Connection", "Keep-Alive");
+                    //httpGet.addHeader("Connection", "Keep-Alive");
                     long start = System.nanoTime();
-                    long count = 10000;
+                    long count = this.cnt;
 
                     for(int i = 0; i < count; i++){
                         CloseableHttpResponse response1 = httpclient.execute(httpGet);
@@ -161,10 +173,12 @@ public class HttpClientFluentTest
     {
         System.out.println(".......................");
         List<Thread> list = new ArrayList<Thread>();
-        int cnt = 10;
-        for(int i = 0 ; i < cnt; ++i)
+        long start = System.nanoTime();
+        long count = 10000;
+        int threadCnt = 300;
+        for(int i = 0 ; i < threadCnt; ++i)
         {
-            Thread th = new ThreadedHttpGet();
+            Thread th = new ThreadedHttpGet( (int)(count/threadCnt));
             list.add(th);
             th.start();
         }
@@ -174,46 +188,41 @@ public class HttpClientFluentTest
         for(Thread th : list){
             th.join();
         }
+
+        long end = System.nanoTime();
+        System.out.printf("total concurrent tps:%f\n", ((double)count)*1000*1000*1000/(end-start));
     }
 
-    public void testHttpMultiGet() throws Exception
+
+    public void testHttpMultiGetWithSingleConnection() throws Exception
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
-            String url = "http://127.0.0.1";
+            String url = "http://www.baidu.com";
             HttpGet httpGet = new HttpGet(url);
-            
-            httpGet.addHeader("Connection", "Keep-Alive");
+
             long start = System.nanoTime();
-            long count = 10000;
+            long count = 100;
 
             for(int i = 0; i < count; i++){
-                CloseableHttpResponse response1 = httpclient.execute(httpGet);
-
-                try {
-                    //System.out.println(response1.getStatusLine());
-
-                    HttpEntity entity1 = response1.getEntity();
-                    EntityUtils.consume(entity1);
-                } 
-                finally {
-                    response1.close();
-                }
+                sendRequest(httpclient);
             }
+
             long end = System.nanoTime();
             System.out.printf("tps:%f\n", ((double)count)*1000*1000*1000/(end-start));
         } finally {
             httpclient.close();
         }
     }
+
     public void testHttpGet() throws Exception
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
-            String url = "http://127.0.0.1";
+            String url = "http://www.baidu.com";
             HttpGet httpGet = new HttpGet(url);
             
-            httpGet.addHeader("Connection", "Keep-Alive");
+            //httpGet.addHeader("Connection", "Keep-Alive");
             CloseableHttpResponse response1 = httpclient.execute(httpGet);
 
             try {
@@ -222,54 +231,81 @@ public class HttpClientFluentTest
                 HttpEntity entity1 = response1.getEntity();
                 EntityUtils.consume(entity1);
 
-                System.out.println("...........................");
-                Thread.currentThread().sleep(10000);
-                System.out.println("...........................end....");
             } 
             finally {
                 response1.close();
             }
+
+            System.out.println("...........................");
+            Thread.currentThread().sleep(10000);
+            System.out.println("...........................end....");
         } finally {
             httpclient.close();
         }
     }
-    @Test
-    public void testHttpGetWithConnectionPool() throws Exception
+
+
+
+    private void sendRequest(CloseableHttpClient client) throws Exception
     {
-        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-            cm.setMaxTotal(100);
-        CloseableHttpClient httpclient = HttpClients.custom()
-                .setConnectionManager(cm)
-                .build();
+        String url = "http://www.baidu.com";
+        HttpGet httpGet = new HttpGet(url);
+
+        CloseableHttpResponse response1 = client.execute(httpGet);
         try {
-            String url = "http://www.baidu.com";
-            HttpGet httpGet = new HttpGet(url);
+            System.out.println(response1.getStatusLine());
 
-            httpGet.addHeader("Connection", "Keep-Alive");
+            HttpEntity entity1 = response1.getEntity();
+            EntityUtils.consume(entity1);
 
-
-            for( int i = 0 ; i < 100; i++) {
-                CloseableHttpResponse response1 = httpclient.execute(httpGet);
-                try {
-                    System.out.println(response1.getStatusLine());
-
-                    HttpEntity entity1 = response1.getEntity();
-                    EntityUtils.consume(entity1);
-
-                } finally {
-                    response1.close();
-                }
-                System.out.printf("%d...........................\n", i);
-                Thread.currentThread().sleep(1000);
-                System.out.printf("%d...........................end....\n",i);
-            }
-
-            System.out.println("...........................");
-            Thread.currentThread().sleep(1000000);
-            System.out.println("...........................end....");
+        } finally {
+            response1.close();
+        }
+    }
+    private void sendRequestWithShortConnection() throws Exception
+    {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            sendRequest(httpclient);
 
         } finally {
             httpclient.close();
+        }
+    }
+    // long connection for each rout 
+    // ConnectionPool  ==>    fetch connection from pool  key[route=url]
+    public void testHttpGetWithConnectionPool() throws Exception
+    {
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        cm.setMaxTotal(100);
+        cm.setDefaultMaxPerRoute(2);
+
+        int count = 100;
+        CloseableHttpClient [] hts = new CloseableHttpClient[count];
+        for( int i = 0; i < count; ++i){
+            hts[i] = HttpClients.custom().setConnectionManager(cm).build();
+        }
+
+        for(int i = 0; i < count; ++i){
+            sendRequest(hts[i]);
+        }
+
+        System.out.println("...........................");
+        Thread.currentThread().sleep(1000000);
+        System.out.println("...........................end....");
+
+        for( int i = 0; i < count; ++i){
+            hts[i].close();
+        }
+
+    }
+
+    //NOTE:   many connections with TIME_WAIT status
+    @Test 
+    public void testHttpGetWithNoPool() throws Exception
+    {
+        for( int i = 0 ; i < 100; ++i){
+            sendRequestWithShortConnection();
         }
     }
 }
