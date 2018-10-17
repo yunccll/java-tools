@@ -29,69 +29,11 @@ public class HttpClientFluentTest
 {
         
     @BeforeClass 
-    public static void setup(){
-       //org.apache.log4j.BasicConfigurator.configure();
+    public static void setup() {
+        //org.apache.log4j.BasicConfigurator.configure();
     }
 
-    //TODO: Future use
-    //TODO: see the fluent api source code && rewrite it
-    public void testHttpJsonRpc() throws Exception
-    {
-        /*
-        {
-            JsonHttpRpc rpc = new JsonHttpRpc.createDefault();
-            rpc.post<Map>(kwargs);
-            rpc.close();
-        }
 
-        {
-            HttpRpc rpc = new JsonHttpRpc(url, HttpConnection.createDefault());
-            for( int i = 0; i < 100; ++i){
-                Result ret = rpc.post<Map>(kwargs);
-                System.out.println(ret.toString());
-            }
-            rpc.close();
-        }
-
-        {
-            HttpConnection hc = new HttpConnection()
-                .setKeepAlive(true)
-                .setConnectTimeout(timeout)
-                .setSocketTimeout(timeout);
-
-            HttpRpc rpc = new JsonHttpRpc(url, hc)
-            for(int i = 0; i < 100; ++i)
-            {
-                Result ret = rpc.post<Map>(kwargs);
-            }
-
-            rpc.close();
-
-            HttpRpc rpc2 = new JsonHttpRpc(url2, hc);
-            rpc2.post<Map>(kwargs);
-            rpc2.close();
-
-            hc.close();
-        }*/
-
-        //result.code = ?
-        //result.data["status"] = ?
-        //result.data["json"] =  ?
-
-        //req: 
-        //  http://127.0.0.1:8080/call?k1=v1&&k2=v2&&k3=v3
-        //  json = {
-        //      "jk1" : "v1",
-        //      "jk2" : "v2" 
-        //  }
-
-        //resp : status_code
-        //     : 200 --> json = {
-        //          "rsp_jk1" : "v1",
-        //          "rsp_jk2" : "v2"
-        //     }
-
-    }
 
 
 
