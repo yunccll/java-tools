@@ -15,28 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 public class JsonHttpRpcTest {
 
-
-    public static class Result
-    {
-        //TODO:
-        public static Result OK, FAILED;
-        static {
-            OK = new Result(0,"OK");
-            FAILED = new Result(-1, "Common Failed");
-        }
-        private int _code ;
-        private String _message;
-        public Result(int code, String message){
-            this._code = code;
-            this._message = message;
-        }
-
-        private Map<String, String> _data;
-        public Result setData(Map<String, String> data){
-            this._data = data;
-            return this;
-        }
-    }
     static class Client implements  Closeable
     {
         public static Client createDefault(){
@@ -87,8 +65,7 @@ public class JsonHttpRpcTest {
             return this;
         }
 
-
-        public Result call(Map<String,String> params, Map<String, String> body)
+        public Result call(Map<String,String> params, Map<String, String> body) throws IOException
         {
             Client client ;
             if(this._client == null){
@@ -97,33 +74,35 @@ public class JsonHttpRpcTest {
             client = this._client;
 
             if(this._httpGet == null){
-                //TODO: check url != null
+                Args.assertNotEmpty(this._url, "url");
                 this._httpGet = new HttpGet(this._url);
             }
 
             //TODO:
             //this.setParams(client, params);
             //this.<T>setBody(client, body);
+            CloseableHttpResponse response = null;
             try {
-                CloseableHttpResponse response = this._client.execute(this._httpGet);
+                response = this._client.execute(this._httpGet);
                 int status = response.getStatusLine().getStatusCode();
                 System.out.println(status);
+                Map<String, String> json = new HashMap<String, String>();
                 if(status == 200){
                     //TODO: check the context type
                     //TODO build json data
-                    return Result.OK;
+                    return Result.OK.setData(json).build();
                 }
-                //TODO: create exception to build the status
-                return Result.FAILED;
-            }
-            catch(final IOException e ){
-                e.printStackTrace();
+                else {
+                    //TODO: create exception to build the status
+                    json.put("status", Integer.toString(status));
+                    return Result.OK.setData(json).build();
+                }
             }
             finally {
-                //TODO:
+                if(response != null){
+                    response.close();
+                }
             }
-            //TODO: return Result???
-            return Result.OK;
         }
     }
 
