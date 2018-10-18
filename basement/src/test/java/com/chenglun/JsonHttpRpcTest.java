@@ -1,5 +1,6 @@
 package com.chenglun;
 
+import org.apache.http.client.fluent.Response;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -64,6 +65,10 @@ public class JsonHttpRpcTest {
             this._client = client;
             return this;
         }
+        //TODO: check the context type && ....
+        private Map<String, String> buildJsonBody(CloseableHttpResponse response){
+            return new HashMap<>();
+        }
 
         public Result call(Map<String,String> params, Map<String, String> body) throws IOException
         {
@@ -86,18 +91,20 @@ public class JsonHttpRpcTest {
                 response = this._client.execute(this._httpGet);
                 int status = response.getStatusLine().getStatusCode();
                 System.out.println(status);
-                Map<String, String> json = new HashMap<String, String>();
+                Map<String, String> json = buildJsonBody(response);
                 if(status == 200){
-                    //TODO: check the context type
-                    //TODO build json data
-                    return Result.OK.setData(json).build();
+                    return (json == null) ? Result.OK() : Result.Builder.OK().setData(json).build();
                 }
                 else {
                     //TODO: create exception to build the status
-                    json.put("status", Integer.toString(status));
-                    return Result.OK.setData(json).build();
+                    if(json == null) {
+                        json = new HashMap<>();
+                        json.put("status", Integer.toString(status));
+                    }
+                    return Result.Builder.OK().setData(json).build();
                 }
             }
+            //TODO: catch TimeoutException
             finally {
                 if(response != null){
                     response.close();
