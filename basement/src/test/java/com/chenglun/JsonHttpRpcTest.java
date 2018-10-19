@@ -1,14 +1,21 @@
 package com.chenglun;
 
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,8 +72,22 @@ public class JsonHttpRpcTest {
             this._client = client;
             return this;
         }
-        //TODO: check the context type && ....
-        private Map<String, String> buildJsonBody(CloseableHttpResponse response){
+
+
+        private Map<String, String> buildJsonBody(CloseableHttpResponse response) throws IOException {
+            HttpEntity entity = response.getEntity();
+            if(entity != null) {
+                if (ContentType.APPLICATION_JSON.getMimeType().equals(ContentType.get(entity).getMimeType())) {
+                    String str = EntityUtils.toString(entity);
+                    System.out.println(str);
+                    //TODO: convert to json from text
+                } else {
+                    throw new ErrorResponseException("content-type is not the json");
+                }
+            }
+            else{
+                throw new ErrorResponseException("no response");
+            }
             return new HashMap<>();
         }
 
@@ -117,7 +138,9 @@ public class JsonHttpRpcTest {
     public void testInterface() throws IOException {
 
         JsonHttpGetRpc rpc = JsonHttpGetRpc.createDefault();
-        rpc.setUrl("http://www.baidu.com");
+        String url = "http://api.map.baidu.com/telematics/v3/weather?location=%E5%98%89%E5%85%B4&output=json&ak=5slgyqGDENN7Sy7pw29IUvrZ";
+        //String url = "http://www.baidu.com";
+        rpc.setUrl(url);
         Map<String, String> param = new HashMap<>();
         Map<String, String> jsonArgs = new HashMap<>();
         rpc.<Map>call(param, jsonArgs);
