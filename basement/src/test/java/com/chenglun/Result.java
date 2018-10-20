@@ -1,8 +1,5 @@
 package com.chenglun;
 
-import jdk.nashorn.internal.ir.LiteralNode;
-
-import javax.swing.plaf.ButtonUI;
 import java.util.Map;
 
 public class Result {
@@ -109,8 +106,10 @@ public class Result {
         if( !(obj instanceof  Result)){
            return false;
         }
-        //TODO:  obj._message == null
-        return true;
+        Result cobj =(Result)obj;
+        return cobj._code == this._code 
+            && Util.equals(this._message, cobj._message) 
+            && Util.equals(this._data, cobj._data);
     }
 
     @Override

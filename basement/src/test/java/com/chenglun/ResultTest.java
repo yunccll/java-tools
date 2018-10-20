@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResultTest {
-    //TODO: do better for assertTrue( Result1, Result2);
     @Test
     public void testResult()
     {
+
         String expectOkStr = "code:[0] msg:[OK] data:[null]";
         assertEquals(expectOkStr, Result.OK().toString());
 

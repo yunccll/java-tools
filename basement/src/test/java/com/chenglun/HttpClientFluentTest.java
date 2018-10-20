@@ -246,7 +246,7 @@ public class HttpClientFluentTest
     @Test 
     public void testHttpGetWithNoPool() throws Exception
     {
-        for( int i = 0 ; i < 100; ++i){
+        for( int i = 0 ; i < 1; ++i){
             sendRequestWithShortConnection();
         }
     }

@@ -7,6 +7,9 @@ import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class AppTest
 {
     final static Logger logger = LoggerFactory.getLogger(AppTest.class);
@@ -68,9 +71,19 @@ public class AppTest
         java.util.Date dt = new java.util.Date(t);
         assertEquals(t, dt.getTime());
 
-        //final String expect = "date:2018-10-11 10:16:17, 10:16:17 上午";
-        //String str = String.format("date:%1$tF %1$tT, %1$tr", dt);
-        //assertEquals(expect, str);
+    }
+    @Test 
+    public void testURI(){
+        try{
+            URI uri = new URI("http://www.baidu.com/help?key=value");        
+            System.out.println(uri.toString());
+        }
+        catch(URISyntaxException e){
+            e.printStackTrace();
+        }
+        catch(NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     @Test

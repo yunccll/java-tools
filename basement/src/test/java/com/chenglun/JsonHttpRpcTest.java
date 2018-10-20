@@ -18,6 +18,13 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
+
+import org.apache.http.client.utils.URIBuilder;
 
 import static org.junit.Assert.assertTrue;
 
@@ -25,8 +32,13 @@ public class JsonHttpRpcTest {
 
     static class Client implements  Closeable
     {
+        public static Client DEFAULT;
+        static {
+            DEFAULT = new Client();
+        }
+
         public static Client createDefault(){
-            return new Client();
+            return Client.DEFAULT;
         }
 
         private CloseableHttpClient _httpclient;
@@ -38,6 +50,7 @@ public class JsonHttpRpcTest {
         public void close() throws IOException {
             this._httpclient.close();
         }
+
         public CloseableHttpResponse execute(HttpGet httpGet) throws IOException {
             return this._httpclient.execute(httpGet);
         }
@@ -46,7 +59,7 @@ public class JsonHttpRpcTest {
     static class JsonHttpGetRpc implements Closeable
     {
         private Client _client ;
-        private String _url;
+        private URI _uri;
         private HttpGet _httpGet;
         private JsonHttpGetRpc(Client client){
             _client = client;
@@ -62,8 +75,10 @@ public class JsonHttpRpcTest {
             _client.close();
         }
 
-        public JsonHttpGetRpc setUrl(final String url){
-            this._url = url;
+        public JsonHttpGetRpc setUri(final URI uri) throws URISyntaxException
+        {
+            Args.assertNotNull(uri, "uri");
+            this._uri = uri;
             return this;
         }
 
@@ -74,13 +89,11 @@ public class JsonHttpRpcTest {
         }
 
 
-        private Map<String, String> buildJsonBody(CloseableHttpResponse response) throws IOException {
+        private String buildJsonBody(CloseableHttpResponse response) throws IOException {
             HttpEntity entity = response.getEntity();
             if(entity != null) {
                 if (ContentType.APPLICATION_JSON.getMimeType().equals(ContentType.get(entity).getMimeType())) {
-                    String str = EntityUtils.toString(entity);
-                    System.out.println(str);
-                    //TODO: convert to json from text
+                    return EntityUtils.toString(entity);
                 } else {
                     throw new ErrorResponseException("content-type is not the json");
                 }
@@ -88,10 +101,9 @@ public class JsonHttpRpcTest {
             else{
                 throw new ErrorResponseException("no response");
             }
-            return new HashMap<>();
         }
 
-        public Result call(Map<String,String> params, Map<String, String> body) throws IOException
+        public Result call(Map<String, String> body) throws IOException
         {
             Client client ;
             if(this._client == null){
@@ -100,29 +112,29 @@ public class JsonHttpRpcTest {
             client = this._client;
 
             if(this._httpGet == null){
-                Args.assertNotEmpty(this._url, "url");
-                this._httpGet = new HttpGet(this._url);
+                Args.assertNotNull(this._uri, "uri");
+                this._httpGet = new HttpGet(this._uri);
             }
 
-            //TODO:
-            //this.setParams(client, params);
-            //this.<T>setBody(client, body);
+            //TODO: this.<T>setBody(client, body);
             CloseableHttpResponse response = null;
             try {
                 response = this._client.execute(this._httpGet);
+                Args.assertNotNull(response, String.format("rsp from uri:[%s]", this._uri.toString()));
                 int status = response.getStatusLine().getStatusCode();
-                System.out.println(status);
-                Map<String, String> json = buildJsonBody(response);
+                String jsonString = buildJsonBody(response);
                 if(status == 200){
-                    return (json == null) ? Result.OK() : Result.Builder.OK().setData(json).build();
+                    System.out.println(jsonString);
+                    //TODO: json map 
+                    return Args.isEmpty(jsonString)? Result.OK() : Result.Builder.OK().setData(new HashMap<String,String>()).build();
                 }
                 else {
                     //TODO: create exception to build the status
-                    if(json == null) {
-                        json = new HashMap<>();
-                        json.put("status", Integer.toString(status));
-                    }
-                    return Result.Builder.OK().setData(json).build();
+                    Map<String, String> map = new HashMap<>();
+                    map.put("status", Integer.toString(status));
+                    if(!Args.isEmpty(jsonString))
+                        map.put("data", jsonString);
+                    return Result.Builder.OK().setData(map).build();
                 }
             }
             //TODO: catch TimeoutException
@@ -133,17 +145,39 @@ public class JsonHttpRpcTest {
             }
         }
     }
+    
+    private URI newURI() throws URISyntaxException, UnsupportedEncodingException
+    {
+        String field = "%E5%98%89%E5%85%B4";
+        try{
+            System.out.println(URLDecoder.decode(field, "utf-8"));
+        }
+        catch(final UnsupportedEncodingException e){
+            System.out.printf("decode field:[%s] failed\n", field);
+            throw e;
+        }
+
+        return new URIBuilder().setScheme("http")
+            .setHost("api.map.baidu.com")
+            .setPath("/telematics/v3/weather")
+            .setParameter("location", "%E5%98%89%E5%85%B4")
+            .setParameter("output", "json")
+            .setParameter("ak", "5slgyqGDENN7Sy7pw29IUvrZ")
+            .build();
+    }
 
     @Test
-    public void testInterface() throws IOException {
+    public void testInterface() throws IOException, URISyntaxException, UnsupportedEncodingException
+    {
+        System.out.println("testInterface...................");
 
         JsonHttpGetRpc rpc = JsonHttpGetRpc.createDefault();
-        String url = "http://api.map.baidu.com/telematics/v3/weather?location=%E5%98%89%E5%85%B4&output=json&ak=5slgyqGDENN7Sy7pw29IUvrZ";
-        //String url = "http://www.baidu.com";
-        rpc.setUrl(url);
-        Map<String, String> param = new HashMap<>();
+        rpc.setUri(this.newURI());
+
         Map<String, String> jsonArgs = new HashMap<>();
-        rpc.<Map>call(param, jsonArgs);
+        Result res = rpc.<Map>call(jsonArgs);
+        if(res != null)
+            System.out.println(res.toString());
         rpc.close();
     }
     //TODO: Future use
@@ -153,7 +187,7 @@ public class JsonHttpRpcTest {
         /*
         {
             JsonHttpRpcTest rpc = new JsonHttpRpcTest.createDefault();
-            rpc.setUrl(url);
+            rpc.setUri(url);
             rpc.get<Map>(kwargs);
             rpc.post<Map>(kwargs);
             rpc.delete<Map>(kwargs);
