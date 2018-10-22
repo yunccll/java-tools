@@ -1,68 +1,7 @@
 package com.chenglun;
 
-import java.util.Map;
 
 public class Result {
-
-    public static class Builder
-    {
-
-        public static Builder DEFAULT()
-        {
-            return new Builder(0, "OK", null);
-        }
-        public static Builder OK()
-        {
-            return new Builder(0, "OK", null);
-        }
-        public Builder()
-        {
-           this(0, "OK", null);
-        }
-        public Builder(final int code)
-        {
-            this(code, "OK", null);
-        }
-        public Builder(final int code, final String message)
-        {
-            this(code, message, null);
-        }
-        public Builder(final int code ,final Exception e){
-            this(code, e.toString(), null);
-        }
-        public Builder(final int code, final String message, final Map<String, String> data){
-            this._code = code;
-            this._message = message;
-            this._data = data;
-        }
-
-        private int _code ;
-        private String _message;
-        private Map<String, String> _data;
-
-        public Result.Builder setData(final Map<String, String> data){
-            this._data = data;
-            return this;
-        }
-        public Result.Builder setCode(final int code){
-            this._code = code;
-            return  this;
-        }
-
-        public Result.Builder setMessage(final String message){
-            this._message = message;
-            return this;
-        }
-
-        public Result build(){
-            return new Result(this._code, this._message, this._data);
-        }
-
-        public Result.Builder setException(final Exception e){
-            return setMessage(e.toString()) ;
-        }
-    }
-
     public static Result OK()
     {
         return new Result(0, "OK", null);
@@ -78,8 +17,12 @@ public class Result {
 
     private int _code ;
     private String _message;
-    private Map<String, String> _data;
-    public Result(final int code, final String message, final Map<String, String> data){
+    private Object _data;
+    public Result()
+    {
+        this(0, "OK", null);
+    }
+    public Result(final int code, final String message, final Object data){
         this._code = code;
         this._message = message;
         this._data = data;
@@ -92,12 +35,39 @@ public class Result {
     public int getCode(){
         return this._code;
     }
+    public Result setCode(final int code)
+    {
+        if(this._code != code) {
+            this._code = code;
+        }
+        return this;
+    }
+
     public String getMessage(){
         return this._message;
     }
-    public Map<String, String> getData(){
+    public Result setMessage(final String message){
+        if(!Util.equals(this, message)){
+            this._message = message;
+        }
+        return this;
+    }
+
+    public Result setException(final Exception e){
+        this.setMessage(e.toString());
+        return this;
+    }
+
+    public Object getData(){
         return this._data;
     }
+    public Result setData(final Object data){
+        if(this._data != data){
+            this._data = data;
+        }
+        return this;
+    }
+
 
     @Override
     public boolean equals(Object obj){
@@ -116,15 +86,12 @@ public class Result {
     public String toString() {
         StringBuilder sb = new StringBuilder(String.format("code:[%d] msg:[%s] data:[", this._code, this._message));
         if(this._data != null) {
-            for (Map.Entry<String, String> e : this._data.entrySet()) {
-                sb.append(String.format("%s:%s,", e.getKey(), e.getValue()));
-            }
+            sb.append(this._data.toString());
         }
         else{
             sb.append("null");
         }
         sb.append(']');
-
         return sb.toString();
     }
 }

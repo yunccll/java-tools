@@ -33,7 +33,7 @@ public class ResultTest {
         args.put("hello1", "World2");
 
         String expectWithArgs = "code:[0] msg:[OK] data:[hello1:World2,hello:World,]";
-        assertEquals(expectWithArgs, Result.Builder.OK().setData(args).build().toString());
+        assertEquals(expectWithArgs, Result.OK().setData(args).toString());
     }
 
     @Test
@@ -44,35 +44,24 @@ public class ResultTest {
         args.put("hello", "World");
         args.put("hello1", "World2");
 
-        Result ret = new Result.Builder(-102, "message--102", args).build();
+        Result ret = new Result(-102, "message--102", args);
         System.out.println(ret.toString());
 
-        ret = new Result.Builder().setCode(-102).setMessage("message--102").setData(args).build();
+        ret = new Result().setCode(-102).setMessage("message--102").setData(args);
         System.out.println(ret.toString());
     }
 
     @Test
     public void testWithExceptionBuilder()
     {
-
-        System.out.println("testWithExceptionBuilder");
         Exception e = new Exception("hello world exception");
-        Result ret = new Result.Builder(-100, e).build();
+        Result ret = new Result().setCode(-100).setException(e);
         String expectStr = ret.toString();
 
-        ret = new Result.Builder(-100).setException(e).build();
+        ret = new Result().setCode(-100).setException(e);
         assertEquals(expectStr, ret.toString());
 
-        Result.Builder.DEFAULT().setCode(-100).setException(e).build();
+        Result.OK().setCode(-100).setException(e);
         assertEquals(expectStr, ret.toString());
-
-    }
-
-    @Test
-    public void testStaticBuilder()
-    {
-        Result ret = Result.OK();
-        Result ret2 = Result.Builder.OK().setCode(0).setMessage("OK").build();
-        assertTrue(ret.equals(ret2));
     }
 }
