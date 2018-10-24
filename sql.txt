@@ -1,0 +1,45 @@
+概念：
+1. 关系和实体
+2. 主键
+3. 外键
+4. 视图作用
+
+高级概念
+范式   
+锁方式：  悲观锁， 乐观锁；
+    悲观锁 使用预防性方式预先避免死锁发生
+    乐观锁 使用检查手段待死锁发生后，进行处理，解决死锁问题
+隔离级别: 
+1.READ UNCIMMITTED（未提交读）
+2.READ COMMITTED（提交读）
+3.REPEATABLE READ（可重复读）
+4.SERIALIZABLE（可串行化）
+
+
+简单实操
+1.  查询数据表有多少条记录
+
+2. 两张表连接 一般用什么 
+    join   
+举个例子：
+    table a(  id,  aname)
+          b(id, aid, bname);
+    select a.id, aname, bname 
+    from a, b
+    where a.id = b.aid
+
+3.查询出表中某列不重复的值
+    select distinct(a1) from a;
+
+4. 一般用什么方式提高数据库查询方式
+    create Index 
+
+5. 你所知道的index 有哪几种
+    唯一索引
+    非唯一索引
+    簇聚索引
+
+6. 排序一般用什么关键字
+    order    
+    desc asc
+
