@@ -4,40 +4,42 @@ import com.sun.org.apache.xpath.internal.Arg;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
-public class JsonHttpGetRpc implements Closeable {
-    final static Logger logger = LoggerFactory.getLogger(JsonHttpGetRpc.class);
+public class JsonHttpPostRpc implements Closeable{
+    final static Logger logger = LoggerFactory.getLogger(JsonHttpPostRpc.class);
 
-    public static class Builder extends  RpcBuilder<Builder, HttpGet>
-    {
-        public Builder() {
-            super(new HttpGet());
+    public static class Builder extends  RpcBuilder<Builder, HttpPost>{
+        public Builder(){
+            super(new HttpPost());
         }
-        public JsonHttpGetRpc build() {
-            Args.assertNotNull(this.httpMethod, "HttpGet");
-            return new JsonHttpGetRpc(this.client, this.httpMethod);
+        public JsonHttpPostRpc build() {
+            Args.assertNotNull(this.httpMethod, "HttpPost");
+            return new JsonHttpPostRpc(this.client, this.httpMethod);
         }
 
-        public static Builder createDefault(){
-            return new JsonHttpGetRpc.Builder().setClient(Clients.createDefault());
+        public static JsonHttpPostRpc.Builder createDefault(){
+            return new JsonHttpPostRpc.Builder().setClient(Clients.createDefault());
         }
     }
 
     private Client client;
-    private HttpGet httpGet;
-
-    private JsonHttpGetRpc(final Client client, final HttpGet httpGet) {
+    private HttpPost httpPost;
+    public JsonHttpPostRpc(final Client client, final HttpPost httpPost)
+    {
         this.client = client;
-        this.httpGet = httpGet;
+        this.httpPost = httpPost;
     }
 
     @Override
@@ -49,15 +51,14 @@ public class JsonHttpGetRpc implements Closeable {
     }
     public URI getURI()
     {
-        return this.httpGet.getURI();
+        return this.httpPost.getURI();
     }
-
-    public JsonHttpGetRpc setHeader(final String name, final String value){
-        this.httpGet.setHeader(name, value);
+    public JsonHttpPostRpc setHeader(final String name, final String value){
+        this.httpPost.setHeader(name, value);
         return this;
     }
-    public JsonHttpGetRpc removeHeader(final String name){
-        this.httpGet.removeHeaders(name);
+    public JsonHttpPostRpc removeHeader(final String name){
+        this.httpPost.removeHeaders(name);
         return this;
     }
 
@@ -76,14 +77,16 @@ public class JsonHttpGetRpc implements Closeable {
         return null;
     }
 
-    public String call() throws IOException
+    public String call(String json) throws IOException
     {
-        Args.assertNotNull(this.client, "Client");
-        Args.assertNotNull(this.httpGet, "HttpGet");
+        Args.assertNotNull(this.httpPost, "HttpPost");
+        StringEntity entity = new StringEntity(Args.isEmpty(json) ? "": json, ContentType.APPLICATION_JSON);
+        this.httpPost.setEntity(entity);
 
+        Args.assertNotNull(this.client, "Client");
         CloseableHttpResponse response = null;
         try {
-            response = this.client.execute(this.httpGet);
+            response = this.client.execute(this.httpPost);
             Args.assertNotNull(response, String.format("rsp is null, uri:[%s]", this.getURI().toString()));
 
             int statusCode = response.getStatusLine().getStatusCode();
@@ -106,10 +109,11 @@ public class JsonHttpGetRpc implements Closeable {
     public String toString()
     {
         StringBuilder sb = new StringBuilder("TODO: request:uri,header,body:\n");
-        sb.append(this.httpGet.toString() + "\n");
-        for(Header he : this.httpGet.getAllHeaders()){
+        sb.append(this.httpPost.toString() + "\n");
+        for(Header he : this.httpPost.getAllHeaders()){
             sb.append(" [").append(he.toString()).append("] ");
         }
         return sb.toString();
     }
+
 }

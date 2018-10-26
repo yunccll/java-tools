@@ -44,7 +44,7 @@ public class JsonHttpRpcTest {
 
         JsonHttpGetRpc rpc = null;
         try {
-            rpc = JsonHttpGetRpc.createDefault().setUri(this.newURI());
+            rpc = JsonHttpGetRpc.Builder.createDefault().setURI(this.newURI()).build();
 
             String jsonResp = rpc.call();
 
@@ -70,83 +70,34 @@ public class JsonHttpRpcTest {
     @Test
     public void withClient() throws IOException {
         {
-            Client client = Client.createDefault();
-            JsonHttpGetRpc rpc = JsonHttpGetRpc.create(client);
-            rpc.setUri(newURI());
+            JsonHttpGetRpc rpc = new JsonHttpGetRpc.Builder()
+                .setClient(Clients.createDefault())
+                .setURI(newURI())
+                .build();
             rpc.call();
             rpc.close();
         }
 
         {
-            //Client client = Client.createPool(Pool);
-            Client client = Client.createDefault(); //==> client builder  timeout && pool
-            JsonHttpGetRpc rpc = JsonHttpGetRpc.create(client); // ==> only from client
-            rpc.setUri(newURI());
+            JsonHttpGetRpc rpc = JsonHttpGetRpc.Builder.createDefault()
+                    .setURI(newURI())
+                    .build();
             rpc.call();
             rpc.close();
         }
     }
-    //TODO: Future use
-    //TODO: see the fluent api source code && rewrite it
+    @Test
     public void testHttpJsonRpc() throws Exception
     {
-        /*
-        {
-            JsonPostHttpRpc rpc = new JsonHttpPostRpc.createDefault().setUri(uri);
-            String json = rpc.call(String json);
-            rpc.close();
 
-            JsonGetHttpRpc rpc = new JsonHttpGetRpc.createDefault()setUri(uri);
-            String json = rpc.call();
-            rpc.close();
-        }
-
-        {
-            HttpRpc rpc = new JsonHttpRpcTest(url, HttpConnection.createDefault());
-            for( int i = 0; i < 100; ++i){
-                Result ret = rpc.post<Map>(kwargs);
-                System.out.println(ret.toString());
-            }
-            rpc.close();
-        }
-
-        {
-            HttpConnection hc = new HttpConnection()
-                .setKeepAlive(true)
-                .setConnectTimeout(timeout)
-                .setSocketTimeout(timeout);
-
-            HttpRpc rpc = new JsonHttpRpcTest(url, hc)
-            for(int i = 0; i < 100; ++i)
-            {
-                Result ret = rpc.post<Map>(kwargs);
-            }
-
-            rpc.close();
-
-            HttpRpc rpc2 = new JsonHttpRpcTest(url2, hc);
-            rpc2.post<Map>(kwargs);
-            rpc2.close();
-
-            hc.close();
-        }*/
-
-        //result.code = ?
-        //result.data["status"] = ?
-        //result.data["json"] =  ?
-
-        //req:
-        //  http://127.0.0.1:8080/call?k1=v1&&k2=v2&&k3=v3
-        //  json = {
-        //      "jk1" : "v1",
-        //      "jk2" : "v2"
-        //  }
-
-        //resp : status_code
-        //     : 200 --> json = {
-        //          "rsp_jk1" : "v1",
-        //          "rsp_jk2" : "v2"
-        //     }
-
+        URI uri = new URI("http://live.admin.haotuoguan.cn/openapi/account/getauth");
+        JsonHttpPostRpc post = JsonHttpPostRpc.Builder.createDefault()
+                .setURI(uri)
+                .build();
+        post.setHeader("Authorization","a9cde0a2-6606-11e7-8f00-525400deb21e" );
+        String json = "{\"account\" : \"htg_test\"}";
+        String result = post.call(json);
+        System.out.println(result);
+        post.close();
     }
 }
