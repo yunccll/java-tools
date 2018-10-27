@@ -1,5 +1,6 @@
 package com.chenglun;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -9,7 +10,6 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.Closeable;
 import java.io.IOException;
 
-//TODO:
 public class Client implements Closeable
 {
 

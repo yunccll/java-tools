@@ -86,17 +86,20 @@ public class JsonHttpRpcTest {
             rpc.close();
         }
     }
+
     @Test
     public void testHttpJsonRpc() throws Exception
     {
-
         URI uri = new URI("http://live.admin.haotuoguan.cn/openapi/account/getauth");
+        String json = "{\"account\" : \"htg_test\"}";
         JsonHttpPostRpc post = JsonHttpPostRpc.Builder.createDefault()
                 .setURI(uri)
+                .setJson(json)
+                .setHeader("Authorization","a9cde0a2-6606-11e7-8f00-525400deb21e" )
                 .build();
-        post.setHeader("Authorization","a9cde0a2-6606-11e7-8f00-525400deb21e" );
-        String json = "{\"account\" : \"htg_test\"}";
-        String result = post.call(json);
+
+        System.out.println(post.toString());
+        String result = post.call();
         System.out.println(result);
         post.close();
     }
