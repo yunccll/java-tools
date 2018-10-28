@@ -32,7 +32,7 @@ public class ResultTest {
         args.put("hello", "World");
         args.put("hello1", "World2");
 
-        String expectWithArgs = "code:[0] msg:[OK] data:[hello1:World2,hello:World,]";
+        String expectWithArgs = "code:[0] msg:[OK] data:[{hello1=World2, hello=World}]";
         assertEquals(expectWithArgs, Result.OK().setData(args).toString());
     }
 

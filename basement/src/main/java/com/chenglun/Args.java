@@ -2,14 +2,14 @@ package com.chenglun;
 
 public class Args {
 
-    public static <T> T assertNotNull(T argument, String name)
+    public static <T> T assertNotNull(final T argument, String name)
     {
         if(argument == null){
             throw new IllegalArgumentException(name + "is null");
         }
         return argument;
     }
-    public static <T extends  CharSequence> T assertNotEmpty(T argument, String name)
+    public static <T extends  CharSequence> T assertNotEmpty(final T argument, String name)
     {
         if(argument == null){
             throw new IllegalArgumentException(name + "is null");
@@ -20,7 +20,7 @@ public class Args {
         return argument;
     }
 
-    public static <T extends  CharSequence> boolean isEmpty(T argument){
+    public static <T extends  CharSequence> boolean isEmpty(final T argument){
         if(argument == null){
             return true;
         }

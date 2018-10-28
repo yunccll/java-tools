@@ -41,8 +41,8 @@ public class ClientTest {
         }
         {
             Client client = Clients.custom()
-                    .setConnectTimeout(10)
-                    .setReadTimeout(10).build();
+                    .setConnectTimeout(1000)
+                    .setReadTimeout(1000).build();
 
             JsonHttpGetRpc rpc = new JsonHttpGetRpc.Builder()
                     .setClient(client)

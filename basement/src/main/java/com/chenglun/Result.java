@@ -1,6 +1,10 @@
 package com.chenglun;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Map;
+
 public class Result {
     public static Result OK()
     {
@@ -15,40 +19,42 @@ public class Result {
         return new Result(-2, "Internal Error", null);
     }
 
-    private int _code ;
-    private String _message;
-    private Object _data;
+    private int code ;
+    private String message;
+    private Object data;
     public Result()
     {
         this(0, "OK", null);
     }
     public Result(final int code, final String message, final Object data){
-        this._code = code;
-        this._message = message;
-        this._data = data;
+        this.code = code;
+        this.message = message;
+        this.data = data;
     }
 
     public Result(final Result result) {
-        this(result._code, result._message, result._data);
+        this(result.code, result.message, result.data);
     }
 
+    @JsonProperty("code")
     public int getCode(){
-        return this._code;
+        return this.code;
     }
     public Result setCode(final int code)
     {
-        if(this._code != code) {
-            this._code = code;
+        if(this.code != code) {
+            this.code = code;
         }
         return this;
     }
 
+    @JsonProperty("message")
     public String getMessage(){
-        return this._message;
+        return this.message;
     }
     public Result setMessage(final String message){
         if(!Util.equals(this, message)){
-            this._message = message;
+            this.message = message;
         }
         return this;
     }
@@ -58,14 +64,21 @@ public class Result {
         return this;
     }
 
+    @JsonProperty("data")
     public Object getData(){
-        return this._data;
+        return this.data;
     }
     public Result setData(final Object data){
-        if(this._data != data){
-            this._data = data;
+        if(this.data != data){
+            this.data = data;
         }
         return this;
+    }
+    public <T> T getDataAsType(){
+        return (T)(this.getData());
+    }
+    public Map<String, Object> getDataAsMap(){
+        return (Map<String, Object>)getData();
     }
 
 
@@ -77,16 +90,16 @@ public class Result {
            return false;
         }
         Result cobj =(Result)obj;
-        return cobj._code == this._code 
-            && Util.equals(this._message, cobj._message) 
-            && Util.equals(this._data, cobj._data);
+        return cobj.code == this.code
+            && Util.equals(this.message, cobj.message)
+            && Util.equals(this.data, cobj.data);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(String.format("code:[%d] msg:[%s] data:[", this._code, this._message));
-        if(this._data != null) {
-            sb.append(this._data.toString());
+        StringBuilder sb = new StringBuilder(String.format("code:[%d] msg:[%s] data:[", this.code, this.message));
+        if(this.data != null) {
+            sb.append(this.data.toString());
         }
         else{
             sb.append("null");
