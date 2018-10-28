@@ -35,7 +35,7 @@ public class JacksonTest {
         }
 
 
-        public static <T,R > R post(String url, T obj, Class<R> cls){
+        private static <T,R > R post(String url, T obj, Class<R> cls){
             try {
                 return JsonRpcFacade.post(url, obj, cls);
             } catch (IOException e) {
@@ -45,6 +45,9 @@ public class JacksonTest {
                 e.printStackTrace();
                 return null;
             }
+        }
+        private  static <T> Result post(String url, T obj){
+            return post(url, obj, Result.class);
         }
 
         static class TeacherJsonView {
@@ -78,7 +81,7 @@ public class JacksonTest {
             }
         }
         public Result vcode(){
-            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo), Result.class);
+            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo));
         }
 
         public Result signIn(final String password)
@@ -118,13 +121,14 @@ public class JacksonTest {
                     return "11111";
                 }
             }
-            return post(serverUrl + "/signin", new SignIn(this.phoneNo, password), Result.class);
+            return post(serverUrl + "/signin", new SignIn(this.phoneNo, password));
         }
 
         public Result signInVcode() {
-            return post(serverUrl + "/signin/vcode", new TeacherJsonView(this.phoneNo), Result.class);
+            return post(serverUrl + "/signin/vcode", new TeacherJsonView(this.phoneNo));
         }
     }
+
     @Test
     public void vcodeTest()
     {
