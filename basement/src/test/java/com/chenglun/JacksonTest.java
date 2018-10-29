@@ -23,7 +23,8 @@ public class JacksonTest {
 
     public static class TeacherApp
     {
-        private static final String serverUrl = "http://dev-sh.admin.haotuoguan.cn/teacher";
+        //private static final String serverUrl = "http://dev-sh.admin.haotuoguan.cn/teacher";
+        private static final String serverUrl = "http://106.75.120.51/teacher";
 
         private String phoneNo;
         private TeacherApp(final String phoneNo){
