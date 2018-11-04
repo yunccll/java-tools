@@ -1,22 +1,13 @@
-package com.chenglun;
+package com.chenglun.net.jsonrpc;
 
-import com.sun.org.apache.xpath.internal.Arg;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import com.chenglun.net.Client;
+import com.chenglun.net.Clients;
+import com.chenglun.util.Args;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 
 public class JsonHttpPostRpc extends  JsonHttpRpc
 {

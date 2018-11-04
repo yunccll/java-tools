@@ -1,4 +1,4 @@
-package com.chenglun;
+package com.chenglun.util;
 
 
 import java.util.Collection;

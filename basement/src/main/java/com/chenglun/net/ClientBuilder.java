@@ -1,4 +1,4 @@
-package com.chenglun;
+package com.chenglun.net;
 
 import org.apache.http.client.config.RequestConfig;
 

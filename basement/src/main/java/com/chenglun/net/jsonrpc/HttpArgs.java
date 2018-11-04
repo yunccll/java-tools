@@ -1,4 +1,4 @@
-package com.chenglun;
+package com.chenglun.net.jsonrpc;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

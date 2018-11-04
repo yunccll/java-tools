@@ -1,5 +1,7 @@
-package com.chenglun;
+package com.chenglun.net.jsonrpc;
 
+import com.chenglun.net.Client;
+import com.chenglun.util.Args;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import java.net.URI;

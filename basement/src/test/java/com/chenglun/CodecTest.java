@@ -1,7 +1,10 @@
 package com.chenglun;
 
+import com.chenglun.crypt.CryptoException;
+import com.chenglun.crypt.DES3Crypt;
+import com.chenglun.crypt.Signature;
+import com.chenglun.util.Args;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.cli.Digest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
@@ -14,6 +17,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class CodecTest {
@@ -56,33 +60,85 @@ public class CodecTest {
         }
     }
 
-    private String dec3(String key, String data){
-        SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "DESede");
+    private String des3Encrypt(final String key, final String data){
+        Args.assertNotEmpty(key, "key");
+        Args.assertNotEmpty(data, "data");
+        return des3(Cipher.ENCRYPT_MODE, key, data);
+    }
+    private String des3Decrypt(final String key, final String data){
+        Args.assertNotEmpty(key, "key");
+        Args.assertNotEmpty(data, "data");
+        return des3(Cipher.DECRYPT_MODE, key, data);
+    }
+    private String des3(final int encryptMode, final String key, final String data){
+        final String CryptoAlgorithm = "DESede";
+        final String ECB            = "ECB";
+        final String PadingMethod = "PKCS5Padding";
+
+        SecretKeySpec skey = new SecretKeySpec(key.getBytes(), CryptoAlgorithm);
+
+        Cipher c1 = null;
         try {
-            Cipher c1 = Cipher.getInstance("DESede/ECB/PKCS5Padding");
+            c1 = Cipher.getInstance(CryptoAlgorithm + "/" + ECB + "/" + PadingMethod);
             c1.init(Cipher.ENCRYPT_MODE, skey);
             return Hex.encodeHexString(c1.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new CryptoException(String.format("crypto algorithm:[%s] error!", CryptoAlgorithm), e);
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+            throw new CryptoException(String.format("crypto padding method:[%s] error!",PadingMethod), e);
         } catch (BadPaddingException e) {
-            e.printStackTrace();
+            throw new CryptoException(String.format("crypto padding failed, use [%s]", PadingMethod), e);
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
+            throw new CryptoException(String.format("block size error, block_size:[%d]!", (c1 != null) ? c1.getBlockSize(): -1 ), e);
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            throw new CryptoException(String.format("key:[%s] invalid!", key), e);
         }
-        return "";
     }
+
+
 
     @Test
     public void tripleDESTest(){
-        String key = "012345678901234567890123";
-        String data = "hello world";
-        String encText = dec3(key, data);
-        System.out.println(encText);
+        final String key = "01234567890123456789";
+        final String data = "hello world";
+        final String expectEncHexText = "71609a35946797161da7169c269ca725";
+
+        DES3Crypt des = new DES3Crypt(key.getBytes());
+
+        {
+            // string --encrypt---> string --decrypt-> string
+            String encHexText = des.encrypt(data);
+            assertEquals(expectEncHexText, encHexText);
+
+            String plainText = des.decrypt(encHexText);
+            assertEquals(data, plainText);
+        }
+
+        {
+            //string --encrypt --> string --decrypt--->string
+            String encHexText = DES3Crypt.encrypt(key, data);
+            String plainText = DES3Crypt.decrypt(key, encHexText);
+            assertEquals(data, plainText);
+        }
+
+
+        {
+            //bytes --encrypt --> bytes
+            byte[] encBytes = des.encrypt(data.getBytes());
+            //bytes --decrypt --> bytes
+            byte[] decBytes = des.decrypt(encBytes);
+            assertArrayEquals(data.getBytes(), decBytes);
+        }
+
+        {
+            byte[] encBytes = DES3Crypt.encrypt(key.getBytes(), data.getBytes());
+            byte[] plainBytes = DES3Crypt.decrypt(key.getBytes(), encBytes);
+            assertArrayEquals(data.getBytes(), plainBytes);
+        }
     }
+
+
+
 
     @Test
     public void signature()
@@ -91,18 +147,30 @@ public class CodecTest {
         String timestamp = "1540823295344";
         String key = "123456789012345678901234";
         String phoneNo = "13761875234";
-        String expect = "6478a700543d1f0a624ffd25515695502899c6a9";
+        String expect = "2d7990a1f042beb281a1f1f0012be3a10bc96291";
 
 
+        Signature sign = Signature.create(key.getBytes());
+        System.out.println(sign.toString());
+        String signHex = sign.setTimestamp(timestamp)
+                .setNonce(nonce)
+                .hashFirst(phoneNo)
+                .signature();
+        assertEquals(expect, signHex);
 
         String hashPhoneNo = DigestUtils.sha1Hex(phoneNo);
-        System.out.println(hashPhoneNo);
-        String encText = dec3(key, hashPhoneNo);
-        System.out.println(encText);
+        //System.out.println(hashPhoneNo);
+        String encText = DES3Crypt.encrypt(key, hashPhoneNo);
+        //System.out.println(encText);
         String result = DigestUtils.sha1Hex((encText + timestamp + nonce));
-        System.out.println(result);
-        //#assertEquals(expect, result);
+        assertEquals(expect, result);
 
-
+        String phoneNo2 = "13636318920";
+        signHex = sign
+                .setTimestamp()
+                .setNonce()
+                .hashFirst("13358585693")
+                .signature();
+        System.out.println(signHex);
     }
 }

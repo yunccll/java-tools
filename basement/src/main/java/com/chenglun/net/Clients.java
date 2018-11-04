@@ -1,4 +1,7 @@
-package com.chenglun;
+package com.chenglun.net;
+
+import com.chenglun.net.Client;
+import com.chenglun.net.ClientBuilder;
 
 public class Clients
 {

@@ -1,5 +1,9 @@
 package com.chenglun;
 
+import com.chenglun.net.Client;
+import com.chenglun.net.Clients;
+import com.chenglun.net.jsonrpc.JsonHttpGetRpc;
+import com.chenglun.net.jsonrpc.URIBuildingException;
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.Test;
 

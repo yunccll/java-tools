@@ -1,4 +1,4 @@
-package com.chenglun;
+package com.chenglun.net.jsonrpc;
 
 public class ErrorContentTypeException extends RuntimeException
 {
