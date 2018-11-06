@@ -1,18 +1,15 @@
 package com.chenglun;
 
-import com.chenglun.crypt.Signature;
-import com.chenglun.net.jsonrpc.JsonRpcFacade;
-import com.chenglun.util.Args;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class JacksonTest {
 
@@ -25,196 +22,173 @@ public class JacksonTest {
         }
     }
 
-    public static class TeacherApp {
-        private static final String serverUrl = "http://dev-sh.admin.haotuoguan.cn/teacher";
-        //private static final String serverUrl = "http://106.75.120.51/teacher";
-        private static final String APP_KEY = "123456789012345678901234";
-
-        private String phoneNo;
-        private Signature sign;
-        public Signature getSignature(){
-            return this.sign;
+    static class ResultFacade<T> {
+        public ResultFacade(){
         }
-        private TeacherApp(final String phoneNo) {
-            this.phoneNo = phoneNo;
-            this.sign = Signature.create(APP_KEY.getBytes());
+        @JsonProperty("code")
+        private int code;
+        public int getCode(){
+            return this.code;
         }
-
-        public static TeacherApp create(final String phoneNo) {
-            return new TeacherApp(phoneNo);
+        public void setCode(final int code){
+            this.code = code;
         }
+        @JsonProperty("message")
+        private String message;
+        public String getMessage(){
+            return this.message;
+        }
+        public void setMessage(final String message){
+            this.message = message;
+        }
+        @JsonProperty("data")
+        private T data;
+        public T getData(){
+            return data;
+        }
+        public void setData(final T data){
+            this.data = data;
+        }
+        @Override
+        public String toString(){
+            return String.format("code:%d, message:%s, data:%s",this.code, this.message, this.data.toString());
+        }
+    }
 
+    static class Data {
+        public Data(){
+        }
+        public Data(final String token, final String refreshToken){
+            this.token = token;
+            this.refreshToken = refreshToken;
+        }
+        @JsonProperty("token")
+        private String token;
+        public String getToken(){
+            return token;
+        }
+        public void setToken(final String token){
+            this.token = token;
+        }
+        @JsonProperty("refresh_token")
+        private String refreshToken;
+        public String getRefreshToken(){
+            return this.refreshToken;
+        }
+        public void setRefreshToken(final String refreshToken){
+            this.refreshToken = refreshToken;
+        }
+        @Override
+        public String toString(){
+            return String.format("token:%s, refreshToken:%s",this.token, this.refreshToken);
+        }
+    }
+    static class MapData {
+        public MapData(){
+            mapData = new HashMap<String, Data>();
+            listData = new LinkedList<Data>();
+        }
+        @JsonProperty("map_data")
+        public Map<String, Data> mapData;
+        @JsonProperty("list_data")
+        public List<Data> listData;
 
-        private static <T, R> R post(String url, T obj, Class<R> cls) {
-            try {
-                return JsonRpcFacade.post(url, obj, cls);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                return null;
+        @Override
+        public String toString(){
+            StringBuilder sb = new StringBuilder("map:\t[");
+            for(Map.Entry<String, Data> e : this.mapData.entrySet()){
+                sb.append(String.format("key:%s, value:%s,", e.getKey(), e.getValue()));
             }
-        }
-
-        private static <T> Result post(String url, T obj) {
-            return post(url, obj, Result.class);
-        }
-
-
-
-        public Result vcode() {
-            class TeacherJsonView {
-                private Signature sign;
-                public TeacherJsonView(final String phoneNo, Signature sign) {
-                    Args.assertNotEmpty(phoneNo, "phoneNo");
-                    this.phoneNo = phoneNo;
-                    this.sign = sign.reset().hashFirst(phoneNo);
-                }
-
-                @JsonProperty("phone_no")
-                private String phoneNo;
-
-                public String getPhoneNo() {
-                    return this.phoneNo;
-                }
-
-                @JsonProperty("timestamp")
-                public long getTimestamp() {
-                    return Long.parseLong(this.sign.getTimestamp());
-                }
-
-                @JsonProperty("nonce")
-                public String getNonce() {
-                    return this.sign.getNonce();
-                }
-
-                @JsonProperty("signature")
-                public String getSignature() {
-                    return this.sign.signature();
-                }
+            sb.append("]\nlist:\t[");
+            for(Data d : this.listData){
+                sb.append(String.format("%s,",d));
             }
-            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo, this.getSignature()));
+            sb.append("]\n");
+            return sb.toString();
         }
-
-        public Result signIn(final String password) {
-            class SignIn {
-                private Signature sign;
-
-                public SignIn(final String phoneNo, final String password, Signature sign) {
-                    Args.assertNotEmpty(phoneNo, "phoneNo");
-                    this.phoneNo = phoneNo;
-                    Args.assertNotEmpty(password, "password");
-                    this.password = password;
-
-                    this.sign = sign.reset().hashFirst(password);
-                }
-
-                @JsonIgnore
-                private String password;
-
-                @JsonProperty("phone_no")
-                private String phoneNo;
-
-                public String getPhoneNo() {
-                    return this.phoneNo;
-                }
-
-                @JsonProperty("timestamp")
-                public long getTimestamp() {
-                    return Long.parseLong(this.sign.getTimestamp());
-                }
-
-                @JsonProperty("nonce")
-                public String getNonce() {
-                    return this.sign.getNonce();
-                }
-
-                @JsonProperty("signature")
-                public String getSignature() {
-                    return this.sign.signature();
-                }
-            }
-            return post(serverUrl + "/signin", new SignIn(this.phoneNo, password, this.getSignature()));
+    }
+    static class ComplicatedData{
+        public ComplicatedData(){
         }
-
-        public Result signInVcode(final String vcode) {
-            class TeacherJsonView {
-                private Signature sign;
-                public TeacherJsonView(final String phoneNo,  final String vcode, Signature sign) {
-                    Args.assertNotEmpty(phoneNo, "phoneNo");
-                    this.phoneNo = phoneNo;
-                    this.sign = sign.reset().hashFirst(vcode);
-                }
-
-                @JsonProperty("phone_no")
-                private String phoneNo;
-                public String getPhoneNo() {
-                    return this.phoneNo;
-                }
-
-                @JsonProperty("timestamp")
-                public long getTimestamp() {
-                    return Long.parseLong(this.sign.getTimestamp());
-                }
-
-                @JsonProperty("nonce")
-                public String getNonce() {
-                    return this.sign.getNonce();
-                }
-
-                @JsonProperty("signature")
-                public String getSignature() {
-                    return this.sign.signature();
-                }
-            }
-            return post(serverUrl + "/signin/vcode", new TeacherJsonView(this.phoneNo, vcode, this.getSignature()));
+        @JsonProperty("data")
+        private Data data;
+        public Data getData(){
+            return this.data;
         }
+        public void setData(final Data data){
+            this.data = data;
+        }
+        @JsonProperty("code")
+        private int code;
+        public int getCode(){
+            return this.code;
+        }
+        public void setCode(final int code){
+            this.code = code;
+        }
+        @Override
+        public String toString(){
+            return "complicatedData:\n\t[" + String.format("code:[%d], data:[%s]]", this.code, this.data);
+        }
+    }
+    private static ObjectMapper OM ;
+    static {
+        OM = new ObjectMapper();
     }
 
     @Test
-    public void vcodeTest() {
-        Result res = TeacherApp.create("13761875234").vcode();
-        System.out.println(res.toString());
-        assertTrue(res.getCode() == 0);
+    public void toJson() throws JsonProcessingException {
+        Data d = new Data("token1", "refresh_token1");
+        System.out.println(OM.writeValueAsString(d));
+    }
+    @Test
+    public void fromJsonToPlainObject() throws IOException {
+        String jstr = "{\"token\":\"token1\",\"refresh_token\":\"refresh_token1\"}";
+        Data d = OM.readValue(jstr, Data.class);
+        System.out.println(d.toString());
     }
 
     @Test
-    public void signInTest() {
-        Result res = TeacherApp.create("15821785043").signIn("123456");
-        System.out.println(res.toString());
-        assertTrue(res.getCode() == 0);
-    }
-
-    @Test
-    public void signInVcodeTest() {
-
-        TeacherApp app = TeacherApp.create("15821785043");
-        {
-            Result res = app.vcode();
-            assertTrue(res.getCode() == 0);
-        }
-        {
-            Result res = app.signInVcode("343313");
-            assertTrue(res.getCode() == 0);
-        }
-    }
-
-    /*
-    @Test
-    public void signOutTest()
-    {
-        Result res = TeacherApp.createSignIned("13500003333", "123456").signOut();
-        System.out.println(res.toString());
-        assertTrue(res.getCode() == 0);
+    public void toJsonMap() throws JsonProcessingException {
+        MapData mapD = new MapData();
+        mapD.mapData.put("name", new Data("token1", "refreshToken2"));
+        mapD.listData.add(new Data("token2", "refreshToken2"));
+        //System.out.println(mapD);
+        System.out.println(OM.writeValueAsString(mapD));
     }
     @Test
-    public void showClassStudents()
-    {
-        Result res = TeacherApp.createSignIned("13500003333", "123456").showClassStudents();
-        System.out.println(res.toString());
-        assertTrue(res.getCode() == 0);
+    public void fromJsonToMap() throws IOException {
+        String jstr = "{\"map_data\":{\"name\":{\"token\":\"token1\",\"refresh_token\":\"refreshToken2\"}},\"list_data\":[{\"token\":\"token2\",\"refresh_token\":\"refreshToken2\"}]}";
+        MapData mapD = OM.readValue(jstr, MapData.class);
+        System.out.println(mapD);
     }
-    */
+    @Test
+    public void toJsonComplicatedData() throws JsonProcessingException {
+        ComplicatedData cd = new ComplicatedData();
+        cd.code = 1;
+        cd.data = new Data("token3", "refresh_token3");
+        //System.out.println(cd);
+        System.out.println(OM.writeValueAsString(cd));
+
+
+        ResultFacade<Data> rf = new ResultFacade<Data>();
+        rf.setCode(1);
+        rf.setMessage("OK");
+        rf.setData(new Data("token1", "refreshToken1"));
+        System.out.println(OM.writeValueAsString(rf));
+    }
+    @Test
+    public void fromJsonToComplicatedData() throws IOException {
+        String jstr = "{\"data\":{\"token\":\"token3\",\"refresh_token\":\"refresh_token3\"},\"code\":1}";
+        ComplicatedData cd = OM.readValue(jstr, ComplicatedData.class);
+        System.out.println(cd);
+
+
+        //jstr = "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"token1\",\"refresh_token\":\"refreshToken1\"}}";
+        jstr = "{\"message\":\"OK\",\"code\":0,\"data\":{\"token\":\"token1\",\"refresh_token\":\"refreshToken1\"}}";
+        ResultFacade<Data> rf = OM.readValue(jstr, ResultFacade.class);
+        System.out.println(rf);
+
+    }
 
 }

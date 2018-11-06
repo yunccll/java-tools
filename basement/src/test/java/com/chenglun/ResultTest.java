@@ -2,7 +2,7 @@ package com.chenglun;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +19,11 @@ public class ResultTest {
 
         String expectInternalError = "code:[-2] msg:[Internal Error] data:[null]";
         assertEquals(expectInternalError, Result.INTERNAL_ERROR().toString());
-
-        String expectNullResult = "code:[0] msg:[null] data:[null]" ;
         assertEquals(expectNullResult, new Result(0, null, null).toString());
     }
 
+
+    String expectNullResult = "code:[0] msg:[null] data:[null]" ;
     @Test
     public void testResultWithArgument()
     {
@@ -64,4 +64,8 @@ public class ResultTest {
         Result.OK().setCode(-100).setException(e);
         assertEquals(expectStr, ret.toString());
     }
+
+
+
+
 }
