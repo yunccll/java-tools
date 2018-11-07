@@ -55,7 +55,6 @@ public class Signature {
     }
     public Signature setNonce(){
         long nonce = new Random().nextLong();
-        System.out.println(nonce);
         return this.setNonce(String.valueOf(nonce));
     }
 

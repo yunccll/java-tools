@@ -9,14 +9,50 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
 public class TeacherAppTest {
+    public TeacherAppTest(){}
+
+    static class ResultFacade<T> {
+        public ResultFacade(){
+        }
+        @JsonProperty("code")
+        private int code;
+        public int getCode(){
+            return this.code;
+        }
+        public void setCode(final int code){
+            this.code = code;
+        }
+        @JsonProperty("message")
+        private String message;
+        public String getMessage(){
+            return this.message;
+        }
+        public void setMessage(final String message){
+            this.message = message;
+        }
+        @JsonProperty("data")
+        private T data;
+        public T getData(){
+            return data;
+        }
+        public void setData(final T data){
+            this.data = data;
+        }
+        @Override
+        public String toString(){
+            return String.format("code:%d, message:%s, data:%s",this.code, this.message, this.data.toString());
+        }
+    }
     public static class TeacherApp {
         private static final String serverUrl = "http://dev-sh.admin.haotuoguan.cn/teacher";
         //private static final String serverUrl = "http://106.75.120.51/teacher";
         private static final String APP_KEY = "123456789012345678901234";
+
 
         private String phoneNo;
         private Signature sign;
@@ -45,47 +81,13 @@ public class TeacherAppTest {
             }
         }
 
-        private static <T> Result post(String url, T obj) {
-            return post(url, obj, Result.class);
+        private static <T> ResultFacade<Map<String, Object>> post(String url, T obj) {
+            return post(url, obj, ResultFacade.class);
         }
 
 
 
-        public Result vcode() {
-            class TeacherJsonView {
-                private Signature sign;
-                public TeacherJsonView(final String phoneNo, Signature sign) {
-                    Args.assertNotEmpty(phoneNo, "phoneNo");
-                    this.phoneNo = phoneNo;
-                    this.sign = sign.reset().hashFirst(phoneNo);
-                }
-
-                @JsonProperty("phone_no")
-                private String phoneNo;
-
-                public String getPhoneNo() {
-                    return this.phoneNo;
-                }
-
-                @JsonProperty("timestamp")
-                public long getTimestamp() {
-                    return Long.parseLong(this.sign.getTimestamp());
-                }
-
-                @JsonProperty("nonce")
-                public String getNonce() {
-                    return this.sign.getNonce();
-                }
-
-                @JsonProperty("signature")
-                public String getSignature() {
-                    return this.sign.signature();
-                }
-            }
-            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo, this.getSignature()));
-        }
-
-        public Result signIn(final String password) {
+        public ResultFacade<Map<String, Object>> signIn(final String password) {
             class SignIn {
                 private Signature sign;
 
@@ -126,7 +128,69 @@ public class TeacherAppTest {
             return post(serverUrl + "/signin", new SignIn(this.phoneNo, password, this.getSignature()));
         }
 
-        public Result signInVcode(final String vcode) {
+    }
+    @Test
+    public void signInTest() {
+        class SignInResp {
+            class Teacher {
+                @JsonProperty("id")
+                private int id;
+                @JsonProperty("name")
+                private String name;
+            }
+            @JsonProperty("token")
+            public String token;
+            @JsonProperty("refresh_token")
+            public String refreshToken;
+            @JsonProperty("teacher")
+            public Teacher teacher;
+        }
+        ResultFacade<Map<String, Object>> res = TeacherApp.create("15821785043").signIn("123456");
+        assertTrue(res.getCode() == 0);
+        if(res.getCode() == 0){
+            System.out.println(res.getData());
+        }
+        else{
+            System.out.println(res);
+        }
+    }
+/*
+
+        public ResultFacade<String> vcode() {
+            class TeacherJsonView {
+                private Signature sign;
+                public TeacherJsonView(final String phoneNo, Signature sign) {
+                    Args.assertNotEmpty(phoneNo, "phoneNo");
+                    this.phoneNo = phoneNo;
+                    this.sign = sign.reset().hashFirst(phoneNo);
+                }
+
+                @JsonProperty("phone_no")
+                private String phoneNo;
+
+                public String getPhoneNo() {
+                    return this.phoneNo;
+                }
+
+                @JsonProperty("timestamp")
+                public long getTimestamp() {
+                    return Long.parseLong(this.sign.getTimestamp());
+                }
+
+                @JsonProperty("nonce")
+                public String getNonce() {
+                    return this.sign.getNonce();
+                }
+
+                @JsonProperty("signature")
+                public String getSignature() {
+                    return this.sign.signature();
+                }
+            }
+            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo, this.getSignature()));
+        }
+
+        public ResultFacade<String> signInVcode(final String vcode) {
             class TeacherJsonView {
                 private Signature sign;
                 public TeacherJsonView(final String phoneNo,  final String vcode, Signature sign) {
@@ -158,37 +222,28 @@ public class TeacherAppTest {
             }
             return post(serverUrl + "/signin/vcode", new TeacherJsonView(this.phoneNo, vcode, this.getSignature()));
         }
-    }
-
     @Test
     public void vcodeTest() {
-        Result res = TeacherApp.create("13761875234").vcode();
+        ResultFacade<String> res = TeacherApp.create("13761875234").vcode();
         System.out.println(res.toString());
         assertTrue(res.getCode() == 0);
     }
 
-    @Test
-    public void signInTest() {
-        Result res = TeacherApp.create("15821785043").signIn("123456");
-        System.out.println(res.toString());
-        assertTrue(res.getCode() == 0);
-    }
 
     @Test
     public void signInVcodeTest() {
 
         TeacherApp app = TeacherApp.create("15821785043");
         {
-            Result res = app.vcode();
+            ResultFacade<String> res = app.vcode();
             assertTrue(res.getCode() == 0);
         }
         {
-            Result res = app.signInVcode("343313");
+            ResultFacade<String> res = app.signInVcode("343313");
             assertTrue(res.getCode() == 0);
         }
     }
 
-     /*
     @Test
     public void signOutTest()
     {
