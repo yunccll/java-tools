@@ -9,45 +9,51 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
 public class TeacherAppTest {
     public TeacherAppTest(){}
 
-    static class ResultFacade<T> {
-        public ResultFacade(){
+    public static interface IResult{
+        public int getCode();
+        public String getMessage();
+    }
+
+    public static class AbstractResult implements  IResult {
+        public AbstractResult(){
+            this.code = 0;
+            this.message = "OK";
         }
-        @JsonProperty("code")
+        public AbstractResult(final int code, final String message){
+            this.code = code;
+            this.message = message;
+        }
         private int code;
+        @Override
+        @JsonProperty("code")
         public int getCode(){
             return this.code;
         }
         public void setCode(final int code){
             this.code = code;
         }
-        @JsonProperty("message")
         private String message;
+        @Override
+        @JsonProperty("message")
         public String getMessage(){
             return this.message;
         }
         public void setMessage(final String message){
             this.message = message;
         }
-        @JsonProperty("data")
-        private T data;
-        public T getData(){
-            return data;
-        }
-        public void setData(final T data){
-            this.data = data;
-        }
         @Override
         public String toString(){
-            return String.format("code:%d, message:%s, data:%s",this.code, this.message, this.data.toString());
+            return String.format("code:%d, message:%s",this.code, this.message);
         }
     }
+
+
     public static class TeacherApp {
         private static final String serverUrl = "http://dev-sh.admin.haotuoguan.cn/teacher";
         //private static final String serverUrl = "http://106.75.120.51/teacher";
@@ -69,9 +75,9 @@ public class TeacherAppTest {
         }
 
 
-        private static <T, R> R post(String url, T obj, Class<R> cls) {
+        private static <T, R> R post(String url, T obj, Class<R> clsReturn) {
             try {
-                return JsonRpcFacade.post(url, obj, cls);
+                return JsonRpcFacade.post(url, obj, clsReturn);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -81,13 +87,7 @@ public class TeacherAppTest {
             }
         }
 
-        private static <T> ResultFacade<Map<String, Object>> post(String url, T obj) {
-            return post(url, obj, ResultFacade.class);
-        }
-
-
-
-        public ResultFacade<Map<String, Object>> signIn(final String password) {
+        public IResult signIn(final String password, Class<? extends IResult> cls) {
             class SignIn {
                 private Signature sign;
 
@@ -125,38 +125,12 @@ public class TeacherAppTest {
                     return this.sign.signature();
                 }
             }
-            return post(serverUrl + "/signin", new SignIn(this.phoneNo, password, this.getSignature()));
+            SignIn si = new SignIn(this.phoneNo, password, this.getSignature());
+            String url = serverUrl + "/signin";
+            return TeacherApp.post(url, si, cls);
         }
 
-    }
-    @Test
-    public void signInTest() {
-        class SignInResp {
-            class Teacher {
-                @JsonProperty("id")
-                private int id;
-                @JsonProperty("name")
-                private String name;
-            }
-            @JsonProperty("token")
-            public String token;
-            @JsonProperty("refresh_token")
-            public String refreshToken;
-            @JsonProperty("teacher")
-            public Teacher teacher;
-        }
-        ResultFacade<Map<String, Object>> res = TeacherApp.create("15821785043").signIn("123456");
-        assertTrue(res.getCode() == 0);
-        if(res.getCode() == 0){
-            System.out.println(res.getData());
-        }
-        else{
-            System.out.println(res);
-        }
-    }
-/*
-
-        public ResultFacade<String> vcode() {
+        public IResult vcode(Class<? extends  IResult> cls) {
             class TeacherJsonView {
                 private Signature sign;
                 public TeacherJsonView(final String phoneNo, Signature sign) {
@@ -187,10 +161,9 @@ public class TeacherAppTest {
                     return this.sign.signature();
                 }
             }
-            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo, this.getSignature()));
+            return post(serverUrl + "/vcode", new TeacherJsonView(this.phoneNo, this.getSignature()), cls);
         }
-
-        public ResultFacade<String> signInVcode(final String vcode) {
+        public IResult signInVcode(final String vcode, Class<? extends  IResult> cls){
             class TeacherJsonView {
                 private Signature sign;
                 public TeacherJsonView(final String phoneNo,  final String vcode, Signature sign) {
@@ -220,8 +193,66 @@ public class TeacherAppTest {
                     return this.sign.signature();
                 }
             }
-            return post(serverUrl + "/signin/vcode", new TeacherJsonView(this.phoneNo, vcode, this.getSignature()));
+            return post(serverUrl + "/signin/vcode", new TeacherJsonView(this.phoneNo, vcode, this.getSignature()), cls);
         }
+
+    }
+    static class SignInResult extends AbstractResult {
+        public SignInResult(){
+            super();
+        }
+        class Data {
+            public Data(){}
+            class Teacher {
+                public Teacher(){}
+                @JsonProperty("id")
+                private int id;
+                @JsonProperty("name")
+                private String name;
+                @Override
+                public String toString(){
+                    return "id:" + this.id + ", name:" + this.name;
+                }
+            }
+            @JsonProperty("token")
+            private String token;
+            @JsonProperty("refresh_token")
+            private String refreshToken;
+            @JsonProperty("teacher")
+            private Teacher teacher;
+            @Override
+            public String toString(){
+                return String.format("token:%s,refresh_token:%s,teacher:%s", this.token, this.refreshToken, this.teacher);
+            }
+        }
+
+        public SignInResult(final int code, final String message, final Data data){
+            super(code, message);
+            this.data = data;
+        }
+
+        @JsonProperty("data")
+        private Data data;
+        public Data getData(){
+            return this.data;
+        }
+        @Override
+        public String toString(){
+            return String.format("%s:data:%s", super.toString(), this.data);
+        }
+    }
+    @Test
+    public void signInTest() {
+        IResult res = TeacherApp.create("15821785043").signIn("123456", SignInResult.class);
+        assertTrue(res.getCode() == 0);
+        if(res.getCode() == 0){
+            System.out.println(res.getClass().getName());
+        }
+        else{
+            System.out.println(res);
+        }
+    }
+/*
     @Test
     public void vcodeTest() {
         ResultFacade<String> res = TeacherApp.create("13761875234").vcode();

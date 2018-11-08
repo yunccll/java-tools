@@ -58,23 +58,23 @@ public class JsonRpcFacade
 
 
 
-    public static <R> R post(String url, Class<R> cls) throws IOException, URISyntaxException {
-        return post(url, null, null, null, cls);
+    public static <R> R post(String url, Class<R> clsReturn) throws IOException, URISyntaxException {
+        return post(url, null, null, null, clsReturn);
     }
-    public static <R> R post(String url, HttpArgs.Parameters parameters, Class<R> cls) throws IOException, URISyntaxException {
-        return post(url, parameters, null, null, cls);
+    public static <R> R post(String url, HttpArgs.Parameters parameters, Class<R> clsReturn) throws IOException, URISyntaxException {
+        return post(url, parameters, null, null, clsReturn);
     }
-    public static <T, R> R post(String url, HttpArgs.Parameters parameters, T obj, Class<R> cls) throws IOException, URISyntaxException {
-        return post(url, parameters, null, obj, cls);
+    public static <T, R> R post(String url, HttpArgs.Parameters parameters, T obj, Class<R> clsReturn) throws IOException, URISyntaxException {
+        return post(url, parameters, null, obj, clsReturn);
     }
-    public static  <T,R> R post(String url, T obj, Class<R> cls) throws IOException, URISyntaxException {
-        return post(url, null, null, obj, cls);
+    public static  <T,R> R post(String url, T obj, Class<R> clsReturn) throws IOException, URISyntaxException {
+        return post(url, null, null, obj, clsReturn);
     }
-    public static <T, R> R post(String url, HttpArgs.Headers headers, T obj, Class<R> cls) throws IOException, URISyntaxException {
-        return post(url, null, headers, obj, cls);
+    public static <T, R> R post(String url, HttpArgs.Headers headers, T obj, Class<R> clsReturn) throws IOException, URISyntaxException {
+        return post(url, null, headers, obj, clsReturn);
     }
 
-    public static <T, R> R post(String url, HttpArgs.Parameters parameters, HttpArgs.Headers headers, T obj, Class<R> cls) throws IOException, URISyntaxException
+    public static <T, R> R post(String url, HttpArgs.Parameters parameters, HttpArgs.Headers headers, T obj, Class<R> clsReturn) throws IOException, URISyntaxException
     {
         URIBuilder uriBuilder = new URIBuilder(url);
         if(parameters != null) {
@@ -96,7 +96,7 @@ public class JsonRpcFacade
         JsonHttpRpc rpc = rpcBuilder.build();
         String ret = rpc.call();
         if( !Args.isEmpty(ret)) {
-            return om.readValue(ret, cls);
+            return om.readValue(ret, clsReturn);
         }
         else{
             //TODO: throw exception

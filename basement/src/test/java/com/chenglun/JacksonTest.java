@@ -52,7 +52,7 @@ public class JacksonTest {
         }
         @Override
         public String toString(){
-            return String.format("code:%d, message:%s, data:%s",this.code, this.message, this.data.toString());
+            return String.format("code:%d, message:%s, data:%s",this.code, this.message, this.data);
         }
     }
 
@@ -182,12 +182,16 @@ public class JacksonTest {
     public void fromJsonToComplicatedData() throws IOException {
         String jstr = "{\"data\":{\"token\":\"token3\",\"refresh_token\":\"refresh_token3\"},\"code\":1}";
         ComplicatedData cd = OM.readValue(jstr, ComplicatedData.class);
-        System.out.println(cd);
+        System.out.println(cd.getData().getClass().getName());
 
 
         //jstr = "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"token1\",\"refresh_token\":\"refreshToken1\"}}";
         jstr = "{\"message\":\"OK\",\"code\":0,\"data\":{\"token\":\"token1\",\"refresh_token\":\"refreshToken1\"}}";
         ResultFacade<Data> rf = OM.readValue(jstr, ResultFacade.class);
+        System.out.println(rf);
+
+        jstr = "{\"message\":\"OK\",\"code\":0}";
+        rf = OM.readValue(jstr, ResultFacade.class);
         System.out.println(rf);
 
     }
