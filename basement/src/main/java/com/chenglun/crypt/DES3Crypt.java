@@ -1,6 +1,6 @@
 package com.chenglun.crypt;
 
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -28,7 +28,7 @@ public class DES3Crypt
     }
 
     private byte [] formatKey(final byte [] key){
-        Args.assertNotNull(key, "key");
+        ArgsUtil.assertNotNull(key, "key");
         byte [] realKey = new byte [KeyLen];
         for(int i = 0; i < realKey.length; ++i ){
             if( i < key.length ) {
@@ -66,11 +66,11 @@ public class DES3Crypt
 
 
     public String encrypt(final String data){
-        Args.assertNotNull(data, "data");
+        ArgsUtil.assertNotNull(data, "data");
         return Hex.encodeHexString(crypt(Cipher.ENCRYPT_MODE, data.getBytes()));
     }
     public String decrypt(final String data) {
-        Args.assertNotNull(data, "data");
+        ArgsUtil.assertNotNull(data, "data");
         try {
             byte [] bdata = Hex.decodeHex(data);
             return new String(crypt(Cipher.DECRYPT_MODE, bdata));
@@ -79,11 +79,11 @@ public class DES3Crypt
         }
     }
     public byte [] encrypt(final byte [] data){
-        Args.assertNotNull(data, "data");
+        ArgsUtil.assertNotNull(data, "data");
         return crypt(Cipher.ENCRYPT_MODE, data);
     }
     public byte [] decrypt(final byte [] data){
-        Args.assertNotNull(data, "data");
+        ArgsUtil.assertNotNull(data, "data");
         return crypt(Cipher.DECRYPT_MODE, data);
     }
 

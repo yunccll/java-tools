@@ -22,6 +22,18 @@ public class JsonRpcFacadeTest {
             return String.format("code:%s,msg:%s,auth:%s", this.code, this.msg, this.auth);
         }
     };
+
+    static class Result {
+        public Result(){}
+        @JsonProperty("status")
+        public String status;
+
+        @JsonProperty("message")
+        public String message;
+        public String toString(){
+            return String.format("status:%s, message:%s", this.status, this.message);
+        }
+    }
     @Test
     public void use() throws IOException, URISyntaxException {
 
@@ -31,24 +43,16 @@ public class JsonRpcFacadeTest {
                     .put("location", "嘉兴")
                     .put("output", "json")
                     .put("ak", "5slgyqGDENN7Sy7pw29IUvrZ");
-            Result res = JsonRpcFacade.get(url, parameters);
+            Result res = JsonRpcFacade.get(url, parameters, Result.class);
             System.out.println(res.toString());
-
-            HttpArgs.Data data = HttpArgs.Data.from(res.getDataAsMap());
-            System.out.println(data.get("status").toString());
-            System.out.println(data.get("message").toString());
+            System.out.println(res.status);
+            System.out.println(res.message);
         }
-
         {
             String url = "http://api.map.baidu.com/telematics/v3/weather?location=%25E5%2598%2589%25E5%2585%25B4&output=json&ak=5slgyqGDENN7Sy7pw29IUvrZ";
-            Result res = JsonRpcFacade.get(url);
+            Result res = JsonRpcFacade.get(url, Result.class);
             System.out.println(res.toString());
-
-            HttpArgs.Data data = HttpArgs.Data.from(res.getDataAsMap());
-            System.out.println(data.get("status").toString());
-            System.out.println(data.get("message").toString());
         }
-
         {
             String url = "http://live.admin.haotuoguan.cn/openapi/account/getauth";
             HttpArgs.Headers headers = new HttpArgs.Headers()

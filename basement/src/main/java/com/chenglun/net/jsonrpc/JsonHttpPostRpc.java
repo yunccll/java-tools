@@ -2,7 +2,7 @@ package com.chenglun.net.jsonrpc;
 
 import com.chenglun.net.Client;
 import com.chenglun.net.Clients;
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class JsonHttpPostRpc extends  JsonHttpRpc
 {
-    // final static Logger logger = LoggerFactory.getLogger(JsonHttpPostRpc.class);
+    // final static Logger log = LoggerFactory.getLogger(JsonHttpPostRpc.class);
 
     public static class Builder extends  RpcBuilder<Builder, HttpPost>{
         public Builder(){
@@ -20,7 +20,7 @@ public class JsonHttpPostRpc extends  JsonHttpRpc
 
         private String json;
         public JsonHttpPostRpc build() {
-            Args.assertNotNull(this.httpMethod, "HttpPost");
+            ArgsUtil.assertNotNull(this.httpMethod, "HttpPost");
             return new JsonHttpPostRpc(this.client, this.httpMethod, this.json);
         }
 
@@ -42,8 +42,8 @@ public class JsonHttpPostRpc extends  JsonHttpRpc
     }
 
     private void prepareRequestEntity(String json) {
-        Args.assertNotNull(this.httpRequest, "HttpPost");
-        StringEntity entity = new StringEntity(Args.isEmpty(json) ? "": json, ContentType.APPLICATION_JSON);
+        ArgsUtil.assertNotNull(this.httpRequest, "HttpPost");
+        StringEntity entity = new StringEntity(ArgsUtil.isEmpty(json) ? "": json, ContentType.APPLICATION_JSON);
         ((HttpPost)this.httpRequest).setEntity(entity);
     }
 

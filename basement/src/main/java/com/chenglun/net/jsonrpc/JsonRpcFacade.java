@@ -1,7 +1,6 @@
 package com.chenglun.net.jsonrpc;
 
-import com.chenglun.Result;
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
@@ -9,21 +8,19 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 public class JsonRpcFacade
 {
-    final static Logger logger = LoggerFactory.getLogger(JsonRpcFacade.class);
+    final static Logger log = LoggerFactory.getLogger(JsonRpcFacade.class);
     private static ObjectMapper om;
     static {
         om = new ObjectMapper();
     }
-
-    public static Result get(String url) throws IOException, URISyntaxException
-    {
-        return get(url, null);
+    public static <R> R get(String url, Class<R> clsReturn ) throws URISyntaxException, IOException {
+        return get(url, null, clsReturn);
     }
-    public static Result get(String url, HttpArgs.Parameters parameters) throws URISyntaxException, IOException {
+
+    public static <R> R get(String url, HttpArgs.Parameters parameters, Class<R> clsReturn ) throws URISyntaxException, IOException {
 
         URIBuilder builder = new URIBuilder(url);
         if(parameters != null) {
@@ -34,28 +31,21 @@ public class JsonRpcFacade
                 .setURI(builder.build())
                 .build();
 
-        String ret = null;
         try {
-            ret = rpc.call();
-            if( !Args.isEmpty(ret)) {
-                Map<String, Object> json = om.readValue(ret, Map.class);
-                return Result.OK().setData(json);
+            String jsonString = rpc.call();
+            if( !ArgsUtil.isEmpty(jsonString)) {
+                return om.readValue(jsonString, clsReturn);
             }
             else{
-                logger.warn("json-content-type, but no content");
+                log.warn("json-content-type, but no content");
+                return null;
             }
-        }
-        catch (final IOException e){
-            return Result.FAILED().setException(e);
         }
         finally {
             if(rpc != null)
                 rpc.close();
         }
-        return Result.OK();
     }
-
-
 
 
     public static <R> R post(String url, Class<R> clsReturn) throws IOException, URISyntaxException {
@@ -95,59 +85,16 @@ public class JsonRpcFacade
 
         JsonHttpRpc rpc = rpcBuilder.build();
         String ret = rpc.call();
-        if( !Args.isEmpty(ret)) {
+        if( !ArgsUtil.isEmpty(ret)) {
             return om.readValue(ret, clsReturn);
         }
         else{
             //TODO: throw exception
-            logger.warn("json-content-type, but no content");
+            log.warn("json-content-type, but no content");
         }
         if(rpc != null)
             rpc.close();
 
         return null;
     }
-    /*
-    public static <T> Result post(String url, HttpArgs.Parameters parameters, HttpArgs.Headers headers, T obj) throws IOException, URISyntaxException {
-
-        URIBuilder uriBuilder = new URIBuilder(url);
-        if(parameters != null) {
-            parameters.forEach((k, v) -> uriBuilder.addParameter(k, String.valueOf(v)));
-        }
-
-        JsonHttpPostRpc.Builder rpcBuilder  = JsonHttpPostRpc.Builder.createDefault()
-                .setURI(uriBuilder.build());
-        if(headers != null) {
-            headers.forEach((k,v) -> rpcBuilder.setHeader(k, String.valueOf(v)));
-        }
-
-        if(obj != null){
-            String json = om.writeValueAsString(obj);
-            if(json != null)
-                rpcBuilder.setJson(json);
-        }
-
-        JsonHttpRpc rpc = rpcBuilder.build();
-        String ret = null;
-        try {
-            ret = rpc.call();
-            if( !Args.isEmpty(ret)) {
-                Map<String, Object> json = om.readValue(ret, Map.class);
-                return Result.OK().setData(json);
-            }
-            else{
-                logger.warn("json-content-type, but no content");
-            }
-        }
-        catch (final IOException e){
-            return Result.FAILED().setException(e);
-        }
-        finally {
-            if(rpc != null)
-                rpc.close();
-        }
-        return Result.OK();
-    }
-    */
-
 }

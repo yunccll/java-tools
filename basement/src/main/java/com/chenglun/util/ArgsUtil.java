@@ -1,6 +1,6 @@
 package com.chenglun.util;
 
-public class Args {
+public class ArgsUtil {
 
     public static <T> T assertNotNull(final T argument, String name)
     {

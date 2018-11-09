@@ -3,7 +3,7 @@ package com.chenglun;
 import com.chenglun.crypt.CryptoException;
 import com.chenglun.crypt.DES3Crypt;
 import com.chenglun.crypt.Signature;
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
@@ -61,13 +61,13 @@ public class CodecTest {
     }
 
     private String des3Encrypt(final String key, final String data){
-        Args.assertNotEmpty(key, "key");
-        Args.assertNotEmpty(data, "data");
+        ArgsUtil.assertNotEmpty(key, "key");
+        ArgsUtil.assertNotEmpty(data, "data");
         return des3(Cipher.ENCRYPT_MODE, key, data);
     }
     private String des3Decrypt(final String key, final String data){
-        Args.assertNotEmpty(key, "key");
-        Args.assertNotEmpty(data, "data");
+        ArgsUtil.assertNotEmpty(key, "key");
+        ArgsUtil.assertNotEmpty(data, "data");
         return des3(Cipher.DECRYPT_MODE, key, data);
     }
     private String des3(final int encryptMode, final String key, final String data){

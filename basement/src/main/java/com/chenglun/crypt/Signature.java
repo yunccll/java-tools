@@ -1,6 +1,6 @@
 package com.chenglun.crypt;
 
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -18,7 +18,7 @@ public class Signature {
     }
 
     private Signature(final byte [] key){
-        Args.assertNotNull(key, "key");
+        ArgsUtil.assertNotNull(key, "key");
         this.key = key;
         this.des3 = new DES3Crypt(key);
     }
@@ -86,9 +86,9 @@ public class Signature {
         return this.nonce;
     }
     public String signature(){
-        Args.assertNotNull(this.data, "data");
-        Args.assertNotEmpty(this.timestamp, "timestamp");
-        Args.assertNotEmpty(this.nonce, "nonce");
+        ArgsUtil.assertNotNull(this.data, "data");
+        ArgsUtil.assertNotEmpty(this.timestamp, "timestamp");
+        ArgsUtil.assertNotEmpty(this.nonce, "nonce");
         String encHexString = this.des3.encrypt(this.data);
         //TODO: use high perf sha1Hex...
         return DigestUtils.sha1Hex( encHexString + this.timestamp + this.nonce);

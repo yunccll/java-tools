@@ -2,12 +2,12 @@ package com.chenglun.net.jsonrpc;
 
 import com.chenglun.net.Client;
 import com.chenglun.net.Clients;
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import org.apache.http.client.methods.HttpGet;
 
 public class JsonHttpGetRpc extends JsonHttpRpc
 {
-    //final static Logger logger = LoggerFactory.getLogger(JsonHttpGetRpc.class);
+    //final static Logger log = LoggerFactory.getLogger(JsonHttpGetRpc.class);
 
     public static class Builder extends RpcBuilder<Builder, HttpGet>
     {
@@ -15,7 +15,7 @@ public class JsonHttpGetRpc extends JsonHttpRpc
             super(new HttpGet());
         }
         public JsonHttpGetRpc build() {
-            Args.assertNotNull(this.httpMethod, "HttpGet");
+            ArgsUtil.assertNotNull(this.httpMethod, "HttpGet");
             return new JsonHttpGetRpc(this.client, this.httpMethod);
         }
 

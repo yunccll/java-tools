@@ -1,5 +1,6 @@
 package com.chenglun;
 
+import com.chenglun.util.Result;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 

@@ -1,7 +1,7 @@
 package com.chenglun.net.jsonrpc;
 
 import com.chenglun.net.Client;
-import com.chenglun.util.Args;
+import com.chenglun.util.ArgsUtil;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,7 +17,7 @@ import java.net.URI;
 
 public abstract class JsonHttpRpc implements Closeable
 {
-    final static Logger logger = LoggerFactory.getLogger(JsonHttpRpc.class);
+    final static Logger log = LoggerFactory.getLogger(JsonHttpRpc.class);
 
     protected Client client;
     protected HttpRequestBase httpRequest;
@@ -58,7 +58,7 @@ public abstract class JsonHttpRpc implements Closeable
                 throw new ErrorContentTypeException(errInfo);
             }
         }
-        logger.info("respone of url:[" + this.getURI().toString() + "] is no entity ");
+        log.info("respone of url:[" + this.getURI().toString() + "] is no entity ");
         return null;
     }
 
@@ -69,13 +69,13 @@ public abstract class JsonHttpRpc implements Closeable
     }
 
     protected String execute(Client client, HttpRequestBase httpRequest) throws IOException {
-        Args.assertNotNull(client, "Client");
-        Args.assertNotNull(httpRequest, "HttpGet");
+        ArgsUtil.assertNotNull(client, "Client");
+        ArgsUtil.assertNotNull(httpRequest, "HttpGet");
 
         CloseableHttpResponse response = null;
         try {
             response = client.execute(httpRequest);
-            Args.assertNotNull(response, String.format("rsp is null, uri:[%s]", this.getURI().toString()));
+            ArgsUtil.assertNotNull(response, String.format("rsp is null, uri:[%s]", this.getURI().toString()));
 
             int statusCode = response.getStatusLine().getStatusCode();
             if(statusCode == 200){
@@ -86,7 +86,6 @@ public abstract class JsonHttpRpc implements Closeable
                 throw new StatusCodeException(statusCode, errInfo);
             }
         }
-        //TODO: catch TimeoutException
         finally {
             if(response != null){
                 response.close();

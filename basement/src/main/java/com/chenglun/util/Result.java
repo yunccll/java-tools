@@ -1,12 +1,9 @@
-package com.chenglun;
+package com.chenglun.util;
 
-
-import com.chenglun.util.Util;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-public class Result {
+public class Result implements  IResult{
     public static Result OK()
     {
         return new Result(0, "OK", null);
@@ -20,44 +17,40 @@ public class Result {
         return new Result(-2, "Internal Error", null);
     }
 
-    private int code ;
-    private String message;
+    private AbstractResult result;
     private Object data;
     public Result()
     {
         this(0, "OK", null);
     }
+    public Result(final Result result) {
+        this(result.getCode(), result.getMessage(), result.data);
+    }
     public Result(final int code, final String message, final Object data){
-        this.code = code;
-        this.message = message;
+        this.result = new AbstractResult(code, message);
         this.data = data;
     }
 
-    public Result(final Result result) {
-        this(result.code, result.message, result.data);
-    }
-
-    @JsonProperty("code")
+    @Override
     public int getCode(){
-        return this.code;
+        return this.result.getCode();
     }
     public Result setCode(final int code)
     {
-        if(this.code != code) {
-            this.code = code;
-        }
+        this.result.setCode(code);
+        return this;
+    }
+    @Override
+    public String getMessage(){
+        return this.result.getMessage();
+    }
+    public Result setMessage(final String message){
+        this.result.setMessage(message);
         return this;
     }
 
-    @JsonProperty("message")
-    public String getMessage(){
-        return this.message;
-    }
-    public Result setMessage(final String message){
-        if(!Util.equals(this, message)){
-            this.message = message;
-        }
-        return this;
+    public boolean isOK(){
+        return this.getCode() == 0;
     }
 
     public Result setException(final Exception e){
@@ -65,7 +58,6 @@ public class Result {
         return this;
     }
 
-    @JsonProperty("data")
     public Object getData(){
         return this.data;
     }
@@ -91,14 +83,15 @@ public class Result {
            return false;
         }
         Result cobj =(Result)obj;
-        return cobj.code == this.code
-            && Util.equals(this.message, cobj.message)
+        return Util.equals(this.result, cobj.result)
             && Util.equals(this.data, cobj.data);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(String.format("code:[%d] msg:[%s] data:[", this.code, this.message));
+        StringBuilder sb = new StringBuilder(this.result.toString());
+
+        sb.append(", data:[");
         if(this.data != null) {
             sb.append(this.data.toString());
         }
@@ -106,6 +99,7 @@ public class Result {
             sb.append("null");
         }
         sb.append(']');
+
         return sb.toString();
     }
 }
