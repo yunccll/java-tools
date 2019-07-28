@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 
 //Note:
@@ -67,4 +68,17 @@ public class CollectionTest
             System.out.printf("%s,%s\n", str, m.get(str));
         }
     }
+    @Test
+    public void testStreaming(){
+        final Integer [] data = {1, 3, 4, 5, 6, 83}  ;
+
+        Arrays.stream(data).forEach(x->{ System.out.println(x);});
+
+        Consumer<Integer> action = System.out::println;
+        Arrays.stream(data).forEach(x-> {action.accept(x);});
+
+        Arrays.stream(data).forEach(System.out::println);
+
+    }
 }
+

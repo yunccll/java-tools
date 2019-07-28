@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -90,5 +91,18 @@ public class AppTest
     public void testLogger() {
         logger.info("hello world");
 
+    }
+
+    @Test
+    public void testNet() {
+        try {
+            Thread server = new Thread(new Server(1024));
+            server.start();
+
+            server.join(10 * 1000);
+        }
+        catch(InterruptedException ex){
+            ex.printStackTrace();
+        }
     }
 }
