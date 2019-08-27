@@ -6,15 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.Buffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
-/**
- * Created by chenglun on 2019/7/28.
- */
 public class Server implements  AutoCloseable, Runnable{
 
     final static Logger logger = LoggerFactory.getLogger(Server.class);
@@ -49,19 +41,25 @@ public class Server implements  AutoCloseable, Runnable{
         public String readLine() throws IOException {
             return br.readLine();
         }
-        public void writeLine(String str) throws IOException {
+        public Session writeLine(String str) throws IOException {
             wr.write(str+"\n");
-        }
-        public void flush() throws IOException {
             wr.flush();
+            return this;
         }
 
         @Override
         public void close() throws Exception {
-            if(s != null) {
+            if(wr != null) {
                 wr.flush();
+            }
+            if(s != null && !s.isClosed()){
                 this.s.close();
             }
+        }
+
+        @Override
+        public String toString() {
+            return s.getLocalAddress().toString() + ":" + s.getLocalPort();
         }
     }
 
@@ -75,10 +73,10 @@ public class Server implements  AutoCloseable, Runnable{
             Session ses = null;
             try {
                 ses = new Session(ss.accept());
+                System.out.println("session connected:" + ses.toString());
                 String str = ses.readLine();
                 System.out.println("ReadMessage:" + str);
-                ses.writeLine(str + "hello world");
-                ses.flush();
+                ses.writeLine(str + " ===append by server ");
             }
             catch (IOException ex){
                 ex.printStackTrace();

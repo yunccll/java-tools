@@ -23,9 +23,7 @@ import java.util.function.Consumer;
 public class CollectionTest
 {
     public <T> void printArray(T [] arr){
-        for(final T e : arr){
-            System.out.printf("%s,", e);
-        }
+        Arrays.asList(arr).forEach(x -> {System.out.printf("%s,", x);});
         System.out.println();
     }
     @Test

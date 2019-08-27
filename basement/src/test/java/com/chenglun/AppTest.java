@@ -1,5 +1,6 @@
 package com.chenglun;
 
+import javafx.beans.binding.IntegerBinding;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -10,16 +11,16 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
 
-public class AppTest
-{
+public class AppTest {
     final static Logger logger = LoggerFactory.getLogger(AppTest.class);
 
     @BeforeClass
-    public static void logInit()
-    {
+    public static void logInit() {
         //org.apache.log4j.BasicConfigurator.configure();
     }
+
     @Test
     public void testNumber() {
         {
@@ -42,6 +43,7 @@ public class AppTest
             int j = Integer.parseInt(istr); //better
         }
     }
+
     @Test
     public void testCharF() {
         // char --> int  auto-convert
@@ -53,7 +55,7 @@ public class AppTest
         //int -> char  force-convert
         {
             char ch = 'a';
-            assertEquals((char)97, ch);
+            assertEquals((char) 97, ch);
         }
 
         assertEquals(2, Character.BYTES);
@@ -73,16 +75,15 @@ public class AppTest
         assertEquals(t, dt.getTime());
 
     }
-    @Test 
-    public void testURI(){
-        try{
-            URI uri = new URI("http://www.baidu.com/help?key=value");        
+
+    @Test
+    public void testURI() {
+        try {
+            URI uri = new URI("http://www.baidu.com/help?key=value");
             System.out.println(uri.toString());
-        }
-        catch(URISyntaxException e){
+        } catch (URISyntaxException e) {
             e.printStackTrace();
-        }
-        catch(NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
@@ -96,13 +97,23 @@ public class AppTest
     @Test
     public void testNet() {
         try {
-            Thread server = new Thread(new Server(1024));
+            String ip = "127.0.0.1";
+            int port = 1024;
+            Thread server = new Thread(new Server(port));
             server.start();
 
+            Thread.sleep(100);
+
+            Client cli = new Client(ip, port);
+            cli.writeLine("Hello world");
+            String resp = cli.readLine();
+            System.out.println("resp from Server:" + resp);
+
             server.join(10 * 1000);
-        }
-        catch(InterruptedException ex){
+        } catch (InterruptedException | IOException ex) {
             ex.printStackTrace();
         }
     }
+
+
 }
