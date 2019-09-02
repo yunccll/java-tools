@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="24e80d95-1d89-4ccd-bd70-b1a13aca9e53" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/chenglun/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/AlgorithmTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/SortTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/ThreeSumClosestTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/ThreeSumTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/Util.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_9_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_9_9.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_9_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_9_9.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_9_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_9_9.xml" afterDir="false" />
+    <list default="true" id="24e80d95-1d89-4ccd-bd70-b1a13aca9e53" name="Default" comment="add algorithm code for leetcode">
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/BackTrackingTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/SearchTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/MergeSortTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/bubble/BubbleSortTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/bubble/QuickSortTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/insert/InsertSortTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/insert/ShellSortTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/select/HeapSortTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort/select/SelectSortTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/basement.iml" beforeDir="false" afterPath="$PROJECT_DIR$/basement.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/chenglun/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/chenglun/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/chenglun/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/AppTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/chenglun/CollectionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/CollectionTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/SortTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/SortTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/ThreeSumTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/ThreeSumTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/Util.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -85,7 +83,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.ThreeSumClosestTest">
+  <component name="RunManager" selected="JUnit.SearchTest.testBinarySearch">
     <configuration default="true" type="JUnitTestDiscovery" factoryName="JUnit Test Discovery" changeList="All">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -187,24 +185,24 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SortTest.tetShellSort" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="MergeSortTest.testMergeSort" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="basement" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.chenglun.algorithm.*" />
+          <option name="PATTERN" value="com.chenglun.algorithm.sort.insert.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.chenglun.algorithm" />
-      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.SortTest" />
-      <option name="METHOD_NAME" value="tetShellSort" />
+      <option name="PACKAGE_NAME" value="com.chenglun.algorithm.sort" />
+      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.sort.MergeSortTest" />
+      <option name="METHOD_NAME" value="testMergeSort" />
       <option name="TEST_OBJECT" value="method" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ThreeSumClosestTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="SearchTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="basement" />
       <extension name="coverage">
         <pattern>
@@ -213,14 +211,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.chenglun.algorithm" />
-      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.ThreeSumClosestTest" />
+      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.SearchTest" />
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ThreeSumClosestTest.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="SearchTest.testBinarySearch" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="basement" />
       <extension name="coverage">
         <pattern>
@@ -229,15 +227,15 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.chenglun.algorithm" />
-      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.ThreeSumClosestTest" />
-      <option name="METHOD_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.SearchTest" />
+      <option name="METHOD_NAME" value="testBinarySearch" />
       <option name="TEST_OBJECT" value="method" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ThreeSumClosestTest.test100" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="SearchTest.testSearch" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="basement" />
       <extension name="coverage">
         <pattern>
@@ -246,25 +244,8 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.chenglun.algorithm" />
-      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.ThreeSumClosestTest" />
-      <option name="METHOD_NAME" value="test100" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ThreeSumClosestTest.testException" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="basement" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.chenglun.algorithm.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.chenglun.algorithm" />
-      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.ThreeSumClosestTest" />
-      <option name="METHOD_NAME" value="testException" />
+      <option name="MAIN_CLASS_NAME" value="com.chenglun.algorithm.SearchTest" />
+      <option name="METHOD_NAME" value="testSearch" />
       <option name="TEST_OBJECT" value="method" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <method v="2">
@@ -274,6 +255,15 @@
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sort in basement" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="basement" />
+      <option name="TEST_OBJECT" value="directory" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <dir value="$PROJECT_DIR$/src/test/java/com/chenglun/algorithm/sort" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -322,19 +312,19 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="JUnit.SortTest.tetShellSort" />
-      <item itemvalue="JUnit.ThreeSumClosestTest.testException" />
-      <item itemvalue="JUnit.ThreeSumClosestTest" />
-      <item itemvalue="JUnit.ThreeSumClosestTest.test" />
-      <item itemvalue="JUnit.ThreeSumClosestTest.test100" />
+      <item itemvalue="JUnit.MergeSortTest.testMergeSort" />
+      <item itemvalue="JUnit.sort in basement" />
+      <item itemvalue="JUnit.SearchTest.testSearch" />
+      <item itemvalue="JUnit.SearchTest.testBinarySearch" />
+      <item itemvalue="JUnit.SearchTest" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.ThreeSumClosestTest" />
-        <item itemvalue="JUnit.ThreeSumClosestTest.test" />
-        <item itemvalue="JUnit.ThreeSumClosestTest.test100" />
-        <item itemvalue="JUnit.ThreeSumClosestTest.testException" />
-        <item itemvalue="JUnit.SortTest.tetShellSort" />
+        <item itemvalue="JUnit.SearchTest.testBinarySearch" />
+        <item itemvalue="JUnit.SearchTest" />
+        <item itemvalue="JUnit.SearchTest.testSearch" />
+        <item itemvalue="JUnit.sort in basement" />
+        <item itemvalue="JUnit.MergeSortTest.testMergeSort" />
       </list>
     </recent_temporary>
   </component>
@@ -413,7 +403,14 @@
       <option name="project" value="LOCAL" />
       <updated>1541670079327</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="add algorithm code for leetcode">
+      <created>1566875367015</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1566875367015</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -453,7 +450,8 @@
     <MESSAGE value="jackson Test for all code" />
     <MESSAGE value="add the map&lt;string,object&gt; for resultFacade" />
     <MESSAGE value="重写  jackson 反射 result from json string to object" />
-    <option name="LAST_COMMIT_MESSAGE" value="重写  jackson 反射 result from json string to object" />
+    <MESSAGE value="add algorithm code for leetcode" />
+    <option name="LAST_COMMIT_MESSAGE" value="add algorithm code for leetcode" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

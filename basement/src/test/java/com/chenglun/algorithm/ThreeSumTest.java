@@ -1,7 +1,6 @@
 package com.chenglun.algorithm;
 
 import org.junit.Test;
-import sun.reflect.generics.visitor.Visitor;
 
 import java.util.*;
 
@@ -11,7 +10,7 @@ public class ThreeSumTest {
     public void testArrayToList() {
         Integer[] nums = {-1, 0, 1, 2, -1, -4};
         {
-            Arrays.asList(nums).stream().forEach(System.out::println);
+            Util.printArray(nums);
         }
 
         {
